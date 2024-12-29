@@ -40,26 +40,27 @@ public class UserServiceImpl implements UserService {
 
     private final DeletionRequestService deletionRequestService;
 
-
     @Override
     @Transactional
     public UserDto addEmployee(final SignUpDto signUpDto) {
         log.info("Добавление нового сотрудника.");
 
-        val company = companyService.findById(signUpDto.getCompanyId());
-        val domain = companyService.getDomainById(signUpDto.getCompanyId());
-        val password = Generator.generatePassword();
         val username =
                 Generator.generateUsername(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic());
 
-        if (userRepository.existsByUsername(username)) {
+        val company = companyService.findById(signUpDto.getCompanyId());
+
+        if (userRepository.existsByUsernameAndCompany(username, company)) {
             throw new InvalidDataException("Имя пользователя занято.");
         }
+
+        val domain = companyService.getDomainById(signUpDto.getCompanyId());
+        val password = Generator.generatePassword();
 
         val email =
                 Generator.generateEmail(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic(), domain);
 
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByEmailAndCompany(email, company)) {
             throw new InvalidDataException("Имя электронного ящика занято. Повторите попытку.");
         }
 
@@ -144,6 +145,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+
     @Override
     public UserDataDto findByUsername(final String username) {
         val user = userRepository.findByUsername(username).orElseThrow(
@@ -170,6 +172,7 @@ public class UserServiceImpl implements UserService {
             deletionRequestService.requestDeletion(id, "USER");
         }
     }
+
 
     @Override
     public void cancelEmployeeDeletionTimer(List<UUID> ids) {

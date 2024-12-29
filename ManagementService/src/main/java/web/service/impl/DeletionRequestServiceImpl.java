@@ -46,7 +46,7 @@ public class DeletionRequestServiceImpl implements DeletionRequestService {
     @Transactional
     public void cancelDeletion(UUID entityId, String entityType) {
         DeletionRequest request = deletionRequestRepository.findByEntityIdAndEntityType(entityId, entityType)
-                .orElseThrow(() -> new InvalidDataException("Запрос на удаление для этого объекта не найден."));
+                .orElseThrow(() -> new IllegalArgumentException("Запрос на удаление для этого объекта не найден."));
         request.setCanceled(true);
         deletionRequestRepository.save(request);
     }

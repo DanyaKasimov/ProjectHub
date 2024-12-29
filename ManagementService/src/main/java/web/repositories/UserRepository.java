@@ -14,11 +14,11 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    boolean existsByUsername(String username);
+    boolean existsByUsernameAndCompany(String username, Company company);
 
     boolean existsUserById(UUID id);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndCompany(String email, Company company);
 
     @Query("select u.id from User u where u.company = :company")
     List<UUID> findAllByCompany(@Param("company") Company company);

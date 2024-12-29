@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import web.dto.request.CompanyDto;
 import web.dto.response.ResponseDto;
@@ -72,8 +73,43 @@ public interface CompanyApi {
             ),
     })
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto deleteCompany(final @PathVariable @Valid UUID id);
+
+
+
+//    @Operation(description = "Удаление компании.")
+//    @ApiResponses(value = {
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "Удаление прошло успешно.",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseDto.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "403",
+//                    description = "Недостаточно прав.",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseDto.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "404",
+//                    description = "Компания не найдена.",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ResponseDto.class)
+//                    )
+//            ),
+//    })
+//    @DeleteMapping("/update")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @ResponseStatus(HttpStatus.OK)
+//    ResponseDto updateCompany(final @RequestBody @Valid CompanyEditDto id);
 
 
 
@@ -105,6 +141,7 @@ public interface CompanyApi {
             ),
     })
     @PutMapping("/delete-cancel/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto deleteCancelCompany(final @PathVariable @Valid UUID id);
 }

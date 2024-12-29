@@ -41,15 +41,16 @@ public class CompanyServiceImpl implements CompanyService {
 
         Company company = companyRepository.save(
                 Company.builder()
-                    .name(dto.getName())
-                    .domain(domain)
-                    .inn(dto.getInn())
-                    .createdAt(LocalDateTime.now())
-                    .build()
+                        .name(dto.getName())
+                        .domain(domain)
+                        .inn(dto.getInn())
+                        .createdAt(LocalDateTime.now())
+                        .build()
         );
 
         return company.getId();
     }
+
 
     @Override
     public String getDomainById(final UUID id) {
