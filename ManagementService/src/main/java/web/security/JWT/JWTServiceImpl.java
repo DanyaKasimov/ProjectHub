@@ -23,6 +23,7 @@ public class JWTServiceImpl implements JWTService {
                 .withClaim("name", userDetails.getName())
                 .withClaim("surname", userDetails.getSurname())
                 .withClaim("id", String.valueOf(userDetails.getId()))
+                .withClaim("role", String.valueOf(userDetails.getAuthorities().stream().limit(1)))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .sign(Algorithm.HMAC256(SECRET));
     }

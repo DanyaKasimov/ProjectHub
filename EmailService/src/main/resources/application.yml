@@ -1,24 +1,32 @@
 server:
-  port: 8090
+  port: 8095
 
 spring:
   application:
-    name: management-service
+    name: email-service
+
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5431/projecthub
     username: postgres
     password: root
+    url: jdbc:postgresql://localhost:5431/projecthub
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
+  profiles:
+    active: dev
+#  data:
+#    redis:
+#      host: redis
+#      port: 6379
 
 logging:
+  file:
+    path: ./EmailService/logs
   level:
     root: info
     org:
@@ -26,19 +34,16 @@ logging:
         web: warn
       hibernate: error
     web: warn
-  file:
-    path: ./ManagementService/logs
-
-auth:
-  jwt:
-    secret: a3dwap2awpokDopwad
-
 
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+auth:
+  jwt:
+    secret: a3dwap2awpokDopwad
 
 
 eureka:

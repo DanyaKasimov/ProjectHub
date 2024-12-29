@@ -3,11 +3,14 @@ package web.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import web.accessor.EmailService;
 import web.dto.request.SignUpDto;
 import web.dto.request.UserAddDto;
+import web.dto.response.EmailCreateDto;
 import web.dto.response.UserDto;
 import web.dto.response.UserDataDto;
 import web.exception.InvalidDataException;
@@ -38,6 +41,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
 
+    private final EmailService emailService;
+
     private final DeletionRequestService deletionRequestService;
 
     @Override
@@ -57,12 +62,16 @@ public class UserServiceImpl implements UserService {
         val domain = companyService.getDomainById(signUpDto.getCompanyId());
         val password = Generator.generatePassword();
 
-        val email =
-                Generator.generateEmail(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic(), domain);
 
-        if (userRepository.existsByEmailAndCompany(email, company)) {
-            throw new InvalidDataException("Имя электронного ящика занято. Повторите попытку.");
-        }
+        UUID emailId = UUID.fromString(String.valueOf(emailService.createEmail(
+                EmailCreateDto.builder()
+                        .name(signUpDto.getName())
+                        .surname(signUpDto.getSurname())
+                        .patronymic(signUpDto.getPatronymic())
+                        .domain(domain)
+                        .build()
+        ).getResult()));
+
 
         val user = userRepository.save(
                 User.builder()
@@ -70,9 +79,9 @@ public class UserServiceImpl implements UserService {
                         .surname(signUpDto.getSurname())
                         .patronymic(signUpDto.getPatronymic())
                         .username(username)
-                        .email(email)
                         .password(passwordEncoder.encode(password))
                         .position(signUpDto.getPosition())
+                        .emailId(emailId)
                         .company(company)
                         .role(signUpDto.getRole())
                         .birthday(signUpDto.getBirthday())
@@ -121,6 +130,7 @@ public class UserServiceImpl implements UserService {
 
         val password = Generator.generatePassword();
         user.setPassword(passwordEncoder.encode(password));
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
         return password;

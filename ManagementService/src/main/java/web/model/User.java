@@ -36,7 +36,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String email;
+    private UUID emailId;
 
     private String contacts;
 
