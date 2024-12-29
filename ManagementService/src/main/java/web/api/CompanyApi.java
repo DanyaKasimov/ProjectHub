@@ -78,41 +78,6 @@ public interface CompanyApi {
     ResponseDto deleteCompany(final @PathVariable @Valid UUID id);
 
 
-
-//    @Operation(description = "Удаление компании.")
-//    @ApiResponses(value = {
-//            @ApiResponse(
-//                    responseCode = "200",
-//                    description = "Удаление прошло успешно.",
-//                    content = @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = ResponseDto.class)
-//                    )
-//            ),
-//            @ApiResponse(
-//                    responseCode = "403",
-//                    description = "Недостаточно прав.",
-//                    content = @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = ResponseDto.class)
-//                    )
-//            ),
-//            @ApiResponse(
-//                    responseCode = "404",
-//                    description = "Компания не найдена.",
-//                    content = @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = ResponseDto.class)
-//                    )
-//            ),
-//    })
-//    @DeleteMapping("/update")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    @ResponseStatus(HttpStatus.OK)
-//    ResponseDto updateCompany(final @RequestBody @Valid CompanyEditDto id);
-
-
-
     @Operation(description = "Отмена удаления компании.")
     @ApiResponses(value = {
             @ApiResponse(
