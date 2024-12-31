@@ -3,16 +3,16 @@ package web.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.accessor.EmailService;
 import web.dto.request.SignUpDto;
 import web.dto.request.UserAddDto;
-import web.dto.response.EmailCreateDto;
-import web.dto.response.UserDto;
-import web.dto.response.UserDataDto;
+import web.dto.response.*;
 import web.exception.InvalidDataException;
 import web.exception.NoDataFoundException;
 import web.mappers.UserMapper;
@@ -23,6 +23,7 @@ import web.service.CompanyService;
 import web.service.DeletionRequestService;
 import web.service.UserService;
 import web.utils.Generator;
+import web.utils.JsonUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,11 +40,16 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final KafkaTemplate<String, EmailSendDto> kafkaTemplate;
+
     private final UserMapper userMapper;
 
     private final EmailService emailService;
 
     private final DeletionRequestService deletionRequestService;
+
+    @Value("${spring.kafka.topic.send-email}")
+    private String topic;
 
     @Override
     @Transactional
@@ -63,15 +69,19 @@ public class UserServiceImpl implements UserService {
         val password = Generator.generatePassword();
 
 
-        UUID emailId = UUID.fromString(String.valueOf(emailService.createEmail(
+        String emailResponse = String.valueOf(emailService.createEmail(
                 EmailCreateDto.builder()
                         .name(signUpDto.getName())
                         .surname(signUpDto.getSurname())
                         .patronymic(signUpDto.getPatronymic())
                         .domain(domain)
                         .build()
-        ).getResult()));
+        ).getResult());
 
+        emailResponse = JsonUtil.validate(emailResponse, "id");
+        emailResponse = JsonUtil.validate(emailResponse, "name");
+
+        EmailDto emailDto = JsonUtil.fromString(emailResponse, EmailDto.class);
 
         val user = userRepository.save(
                 User.builder()
@@ -81,7 +91,8 @@ public class UserServiceImpl implements UserService {
                         .username(username)
                         .password(passwordEncoder.encode(password))
                         .position(signUpDto.getPosition())
-                        .emailId(emailId)
+                        .emailId(emailDto.getId())
+                        .emailRoot(signUpDto.getEmail())
                         .company(company)
                         .role(signUpDto.getRole())
                         .birthday(signUpDto.getBirthday())
@@ -90,6 +101,21 @@ public class UserServiceImpl implements UserService {
                         .build()
         );
 
+        val emailContent = EmailContentDto.builder()
+                .email(emailDto.getName())
+                .password(password)
+                .username(username)
+                .build();
+
+        val emailMessage = EmailSendDto.builder()
+                .address(signUpDto.getEmail())
+                .content(emailContent)
+                .build();
+
+        log.info(emailMessage.getAddress());
+        log.info(emailMessage.getContent().toString());
+        log.info(emailMessage.toString());
+        kafkaTemplate.send(topic, emailMessage);
         return userMapper.toDto(user).withPassword(password);
     }
 

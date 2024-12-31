@@ -38,6 +38,8 @@ public class User {
     @Column(nullable = false)
     private UUID emailId;
 
+    private String emailRoot;
+
     private String contacts;
 
     @Column(nullable = false)

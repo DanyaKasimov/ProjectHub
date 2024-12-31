@@ -27,4 +27,6 @@ public class SignUpDto {
     private LocalDate birthday;
 
     private Role role;
+
+    private String email;
 }

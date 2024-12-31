@@ -18,6 +18,9 @@ spring:
         format_sql: true
     show-sql: false
 
+  kafka:
+    topic:
+      send-email: "email-send"
 logging:
   level:
     root: info

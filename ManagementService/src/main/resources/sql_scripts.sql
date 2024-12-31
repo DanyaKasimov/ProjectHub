@@ -22,6 +22,7 @@ CREATE TABLE user_management.users
     username   VARCHAR(255)                   NOT NULL,
     password   VARCHAR(255)                   NOT NULL,
     email_id   UUID                           NOT NULL,
+    email_root VARCHAR(255)                   NOT NULL,
     contacts   VARCHAR(255),
     position   VARCHAR(255)                   NOT NULL,
     company_id UUID,

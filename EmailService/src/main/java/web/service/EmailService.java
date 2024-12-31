@@ -2,11 +2,13 @@ package web.service;
 
 import org.springframework.stereotype.Service;
 import web.dto.request.EmailCreateDto;
-
-import java.util.UUID;
+import web.dto.response.EmailSendDto;
+import web.dto.response.EmailDto;
 
 @Service
 public interface EmailService {
 
-    UUID createEmail(final EmailCreateDto dto);
+    EmailDto createEmail(final EmailCreateDto dto);
+
+    void sendEmail(final EmailSendDto dto);
 }

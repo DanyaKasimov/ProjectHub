@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import web.dto.request.EmailCreateDto;
+import web.dto.response.EmailSendDto;
 import web.dto.response.ResponseDto;
 
 @RequestMapping("api/v1/email")
@@ -34,4 +35,20 @@ public interface EmailApi {
     @ResponseStatus(HttpStatus.OK)
     ResponseDto createEmail(final @RequestBody @Valid EmailCreateDto signInDto);
 
+
+    @Operation(description = "Отправка письма на электронную почту")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Письмо отправлено.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @PostMapping("/send")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto sendEmail(final @RequestBody @Valid EmailSendDto sendDto);
 }
+
