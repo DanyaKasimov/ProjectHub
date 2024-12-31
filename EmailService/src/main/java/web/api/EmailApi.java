@@ -1,12 +1,16 @@
 package web.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import web.dto.request.EmailCreateDto;
@@ -76,7 +80,6 @@ public interface EmailApi {
     ResponseDto getEmail(final @PathVariable @Valid UUID id);
 
 
-
     @Operation(description = "Отправка кооперативной почты.")
     @ApiResponses(value = {
             @ApiResponse(
@@ -122,6 +125,8 @@ public interface EmailApi {
     })
     @GetMapping("/list/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseDto getEmailList(final @PathVariable @Valid UUID id);
+    ResponseDto getEmailList(final @PathVariable @Valid UUID id,
+                             @Parameter(description = "Пагинация списка.", required = true)
+                             @ParameterObject @PageableDefault Pageable pageable);
 }
 

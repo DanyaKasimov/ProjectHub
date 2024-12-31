@@ -2,6 +2,8 @@ package web.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.dto.request.EmailMessageDto;
 import web.dto.response.email.EmailDto;
@@ -11,6 +13,7 @@ import web.service.EmailMessageService;
 import web.service.EmailService;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,4 +45,14 @@ public class EmailMessageServiceImpl implements EmailMessageService {
 
 
     }
+
+
+    @Override
+    public Page<EmailMessage> getEmailList(UUID id, Pageable pageable) {
+        log.info("Получение списка писем. ID: {}", id);
+
+        emailService.findById(id);
+        return emailMessageRepository.findAllByToId(id, pageable);
+    }
+
 }

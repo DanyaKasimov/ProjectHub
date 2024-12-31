@@ -3,6 +3,7 @@ package web.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 import web.api.EmailApi;
 import web.dto.request.EmailCreateDto;
@@ -58,8 +59,12 @@ public class EmailController implements EmailApi {
         return ResponseDto.builder().result("Письмо отправлено.").build();
     }
 
+
     @Override
-    public ResponseDto getEmailList(UUID id) {
-        return null;
+    public ResponseDto getEmailList(final UUID id, final Pageable pageable) {
+        log.info("Поступил запрос на получения списка писем с пагинацией. Владелец: {}", id);
+
+        val list = emailMessageService.getEmailList(id, pageable);
+        return ResponseDto.builder().result(list).build();
     }
 }
