@@ -1,0 +1,8 @@
+Новые учетные данные на платформе "ProjectHub".
+
+Ваш email: {{ email }}
+Ваш username: {{ username }}
+Ваш password: {{ password }}
+
+
+

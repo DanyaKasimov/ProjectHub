@@ -14,4 +14,5 @@ public class EmailSendDto {
     private String address;
 
     private Object content;
+
 }

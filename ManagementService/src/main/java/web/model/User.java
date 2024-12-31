@@ -40,8 +40,6 @@ public class User {
 
     private String emailRoot;
 
-    private String contacts;
-
     @Column(nullable = false)
     private String position;
 
@@ -51,8 +49,6 @@ public class User {
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
-
-    private LocalDate birthday;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

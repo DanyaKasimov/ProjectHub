@@ -19,7 +19,7 @@ public interface UserService {
 
     void deleteEmployees(final List<UUID> ids);
 
-    String updatePasswordEmployee(final UUID id);
+    void updatePasswordEmployee(final UUID id);
 
     UserDataDto findByUsername(final String username);
 

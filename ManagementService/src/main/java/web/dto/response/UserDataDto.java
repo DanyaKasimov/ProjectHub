@@ -27,11 +27,7 @@ public class UserDataDto {
 
     private String email;
 
-    private String contacts;
-
     private String position;
-
-    private LocalDate birthday;
 
     private Role role;
 }

@@ -8,13 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import web.dto.request.EmailCreateDto;
 import web.dto.response.EmailSendDto;
 import web.dto.response.ResponseDto;
+
+import java.util.UUID;
 
 @RequestMapping("api/v1/email")
 @Tag(name = "Управление электронной почтой", description = "Методы для управления электронной почтой")
@@ -50,5 +49,37 @@ public interface EmailApi {
     @PostMapping("/send")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto sendEmail(final @RequestBody @Valid EmailSendDto sendDto);
+
+
+    @Operation(description = "Получение почты по ID")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Почта получена.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Недостаточно прав.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Почта не найдена.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @GetMapping("/get/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto getEmail(final @PathVariable @Valid UUID id);
 }
 

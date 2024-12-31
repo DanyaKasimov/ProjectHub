@@ -12,6 +12,14 @@ CREATE TABLE user_management.companies
     primary key (id)
 );
 
+CREATE TABLE email_management.emails
+(
+    id         UUID default gen_random_uuid() NOT NULL,
+    name       VARCHAR(255)                   NOT NULL,
+    created_at TIMESTAMP                      NOT NULL,
+    primary key (id)
+);
+
 
 CREATE TABLE user_management.users
 (
@@ -23,11 +31,9 @@ CREATE TABLE user_management.users
     password   VARCHAR(255)                   NOT NULL,
     email_id   UUID                           NOT NULL,
     email_root VARCHAR(255)                   NOT NULL,
-    contacts   VARCHAR(255),
     position   VARCHAR(255)                   NOT NULL,
     company_id UUID,
     role       VARCHAR(255),
-    birthday   TIMESTAMP,
     created_at TIMESTAMP                      NOT NULL,
     updated_at TIMESTAMP                      NOT NULL,
     primary key (id),
@@ -35,10 +41,3 @@ CREATE TABLE user_management.users
     foreign key (email_id) references email_management.emails (id)
 );
 
-CREATE TABLE email_management.emails
-(
-    id         UUID default gen_random_uuid() NOT NULL,
-    name       VARCHAR(255)                   NOT NULL,
-    created_at TIMESTAMP                      NOT NULL,
-    primary key (id)
-);

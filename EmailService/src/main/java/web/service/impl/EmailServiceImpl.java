@@ -10,6 +10,7 @@ import web.dto.request.EmailCreateDto;
 import web.dto.response.EmailSendDto;
 import web.dto.response.EmailDto;
 import web.exception.InvalidDataException;
+import web.exception.NoDataFoundException;
 import web.mappers.EmailMapper;
 import web.model.Email;
 import web.repositories.EmailRepository;
@@ -17,6 +18,7 @@ import web.service.EmailService;
 import web.utils.Generator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -55,5 +57,12 @@ public class EmailServiceImpl implements EmailService {
         log.info("Отправка письма в кафку.");
 
         kafkaTemplate.send(topic, dto);
+    }
+
+    @Override
+    public EmailDto findById(UUID id) {
+        Email email = emailRepository.findById(id).orElseThrow(() ->
+                new NoDataFoundException(String.format("Email с ID = %s не найден", id)));
+        return emailMapper.toDto(email);
     }
 }

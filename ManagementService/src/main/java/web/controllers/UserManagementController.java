@@ -52,7 +52,7 @@ public class UserManagementController implements UserManagementApi {
     public ResponseDto updatePasswordEmployee(final UUID id) {
         log.info("Поступил запрос на обновление пароля сотрудника. ID: {}", id);
 
-        val password = userService.updatePasswordEmployee(id);
-        return ResponseDto.builder().result(password).build();
+        userService.updatePasswordEmployee(id);
+        return ResponseDto.builder().result("Пароль обновлен и отправлен на почту сотрудника.").build();
     }
 }

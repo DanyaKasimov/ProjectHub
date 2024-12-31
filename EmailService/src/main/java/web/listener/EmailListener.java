@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import web.dto.response.EmailSendDto;
+import web.utils.FileHandler;
 
 @Component
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class EmailListener {
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(dto.getAddress());
-        message.setSubject("ProjectHub");
         message.setText(String.valueOf(dto.getContent()));
+
         emailSender.send(message);
 
         log.info("Письмо отправлено адресату: {}", dto.getAddress());

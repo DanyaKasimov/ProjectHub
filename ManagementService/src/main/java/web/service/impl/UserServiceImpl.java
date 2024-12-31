@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import web.repositories.UserRepository;
 import web.service.CompanyService;
 import web.service.DeletionRequestService;
 import web.service.UserService;
+import web.utils.FileHandler;
 import web.utils.Generator;
 import web.utils.JsonUtil;
 
@@ -54,34 +54,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto addEmployee(final SignUpDto signUpDto) {
-        log.info("Добавление нового сотрудника.");
-
-        val username =
-                Generator.generateUsername(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic());
+        log.info("Добавление нового сотрудника для компании ID: {}", signUpDto.getCompanyId());
 
         val company = companyService.findById(signUpDto.getCompanyId());
+        val username = Generator.generateUsername(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic());
 
         if (userRepository.existsByUsernameAndCompany(username, company)) {
-            throw new InvalidDataException("Имя пользователя занято.");
+            throw new InvalidDataException(
+                    String.format("Имя пользователя %s занято в компании %s.", username, company.getName()));
         }
 
-        val domain = companyService.getDomainById(signUpDto.getCompanyId());
+        val domain = company.getDomain();
         val password = Generator.generatePassword();
 
+        val emailCreateDto = EmailCreateDto.builder()
+                .name(signUpDto.getName())
+                .surname(signUpDto.getSurname())
+                .patronymic(signUpDto.getPatronymic())
+                .domain(domain)
+                .build();
 
-        String emailResponse = String.valueOf(emailService.createEmail(
-                EmailCreateDto.builder()
-                        .name(signUpDto.getName())
-                        .surname(signUpDto.getSurname())
-                        .patronymic(signUpDto.getPatronymic())
-                        .domain(domain)
-                        .build()
-        ).getResult());
-
-        emailResponse = JsonUtil.validate(emailResponse, "id");
-        emailResponse = JsonUtil.validate(emailResponse, "name");
-
-        EmailDto emailDto = JsonUtil.fromString(emailResponse, EmailDto.class);
+        val emailResponse = JsonUtil.fromString(
+                JsonUtil.toJsonString(emailService.createEmail(emailCreateDto).getResult()),
+                EmailDto.class
+        );
 
         val user = userRepository.save(
                 User.builder()
@@ -91,34 +87,42 @@ public class UserServiceImpl implements UserService {
                         .username(username)
                         .password(passwordEncoder.encode(password))
                         .position(signUpDto.getPosition())
-                        .emailId(emailDto.getId())
+                        .emailId(emailResponse.getId())
                         .emailRoot(signUpDto.getEmail())
                         .company(company)
                         .role(signUpDto.getRole())
-                        .birthday(signUpDto.getBirthday())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
                         .build()
         );
 
+        sendEmail(signUpDto.getEmail(), emailResponse.getName(), username, password);
+
+        return userMapper.toDto(user);
+    }
+
+    private void sendEmail(String emailRoot, String emailCompany, String username, String password) {
         val emailContent = EmailContentDto.builder()
-                .email(emailDto.getName())
+                .email(emailCompany)
                 .password(password)
                 .username(username)
                 .build();
 
         val emailMessage = EmailSendDto.builder()
-                .address(signUpDto.getEmail())
-                .content(emailContent)
+                .address(emailRoot)
+                .content(generateEmailBody(emailContent))
                 .build();
 
-        log.info(emailMessage.getAddress());
-        log.info(emailMessage.getContent().toString());
-        log.info(emailMessage.toString());
         kafkaTemplate.send(topic, emailMessage);
-        return userMapper.toDto(user).withPassword(password);
     }
 
+    private String generateEmailBody(EmailContentDto emailDto) {
+        String body = FileHandler.loadFromTemplate("email");
+        body = body.replace("{{ email }}", emailDto.getEmail());
+        body = body.replace("{{ username }}", emailDto.getUsername());
+        body = body.replace("{{ password }}", emailDto.getPassword());
+        return body;
+    }
 
     @Override
     @Transactional
@@ -139,7 +143,6 @@ public class UserServiceImpl implements UserService {
         user.setPosition(dto.getPosition());
         user.setRole(dto.getRole());
         user.setUpdatedAt(LocalDateTime.now());
-        user.setBirthday(dto.getBirthday());
 
         userRepository.save(user);
     }
@@ -147,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String updatePasswordEmployee(final UUID id) {
+    public void updatePasswordEmployee(final UUID id) {
         log.info("Обновление пароля сотрудника.");
 
         val user = userRepository.findById(id).orElseThrow(
@@ -157,9 +160,10 @@ public class UserServiceImpl implements UserService {
         val password = Generator.generatePassword();
         user.setPassword(passwordEncoder.encode(password));
         user.setUpdatedAt(LocalDateTime.now());
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
-        return password;
+        String email = emailService.getEmail(user.getEmailId()).getResult().toString();
+        sendEmail(user.getEmailRoot(), email, user.getUsername(), password);
     }
 
 
@@ -199,27 +203,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteEmployeesTimer(List<UUID> ids) {
-        for (UUID id : ids) {
-            if (!userRepository.existsUserById(id)) {
-                throw new NoDataFoundException(String.format("Пользователь с ID = %s не найден.", id));
-            }
+        List<UUID> notFoundIds = ids.stream()
+                .filter(id -> !userRepository.existsUserById(id))
+                .toList();
+
+        if (!notFoundIds.isEmpty()) {
+            throw new NoDataFoundException(String.format("Пользователи с ID = %s не найдены.", notFoundIds));
         }
-        for (UUID id : ids) {
-            deletionRequestService.requestDeletion(id, "USER");
-        }
+
+        ids.forEach(id -> deletionRequestService.requestDeletion(id, "USER"));
     }
 
 
     @Override
     public void cancelEmployeeDeletionTimer(List<UUID> ids) {
-        for (UUID id : ids) {
-            if (!userRepository.existsUserById(id)) {
-                throw new NoDataFoundException(String.format("Пользователь с ID = %s не найден.", id));
-            }
+        List<UUID> notFoundIds = ids.stream()
+                .filter(id -> !userRepository.existsUserById(id))
+                .toList();
+
+        if (!notFoundIds.isEmpty()) {
+            throw new NoDataFoundException(String.format("Пользователи с ID = %s не найдены.", notFoundIds));
         }
-        for (UUID id : ids) {
-            deletionRequestService.cancelDeletion(id, "USER");
-        }
+
+        ids.forEach(id -> deletionRequestService.cancelDeletion(id, "USER"));
     }
 
 }

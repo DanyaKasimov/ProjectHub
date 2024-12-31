@@ -10,6 +10,8 @@ import web.dto.response.EmailSendDto;
 import web.dto.response.ResponseDto;
 import web.service.EmailService;
 
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -31,5 +33,13 @@ public class EmailController implements EmailApi {
 
         emailService.sendEmail(sendDto);
         return ResponseDto.builder().result("Письмо отправлено.").build();
+    }
+
+    @Override
+    public ResponseDto getEmail(final UUID id) {
+        log.info("Поступил запрос на получение названия электронной почты. ID: {}", id);
+
+        val email = emailService.findById(id);
+        return ResponseDto.builder().result(email.getName()).build();
     }
 }

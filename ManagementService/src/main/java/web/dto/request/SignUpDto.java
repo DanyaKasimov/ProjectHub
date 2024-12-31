@@ -24,8 +24,6 @@ public class SignUpDto {
 
     private UUID companyId;
 
-    private LocalDate birthday;
-
     private Role role;
 
     private String email;

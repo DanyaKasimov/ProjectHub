@@ -30,23 +30,13 @@ public class UserDto {
 
     private UUID emailId;
 
-    private String password;
-
     private String position;
 
     private Role role;
 
     private Company company;
 
-    private LocalDate birthday;
-
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-
-    public UserDto withPassword(String password) {
-        this.setPassword(password);
-        return this;
-    }
 }

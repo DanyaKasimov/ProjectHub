@@ -25,7 +25,5 @@ public class UserAddDto {
 
     private UUID companyId;
 
-    private LocalDate birthday;
-
     private Role role;
 }
