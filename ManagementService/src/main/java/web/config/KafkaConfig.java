@@ -9,7 +9,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import web.dto.response.EmailSendDto;
+import web.dto.response.email.EmailSendDto;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,10 +1,8 @@
-package web.dto.response;
+package web.dto.response.email;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.UUID;
 
 @Data
 @Builder

@@ -10,7 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import web.dto.request.EmailCreateDto;
-import web.dto.response.EmailSendDto;
+import web.dto.request.EmailMessageDto;
+import web.dto.response.email.EmailSendDto;
 import web.dto.response.ResponseDto;
 
 import java.util.UUID;
@@ -62,14 +63,6 @@ public interface EmailApi {
                     )
             ),
             @ApiResponse(
-                    responseCode = "403",
-                    description = "Недостаточно прав.",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ResponseDto.class)
-                    )
-            ),
-            @ApiResponse(
                     responseCode = "404",
                     description = "Почта не найдена.",
                     content = @Content(
@@ -81,5 +74,54 @@ public interface EmailApi {
     @GetMapping("/get/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto getEmail(final @PathVariable @Valid UUID id);
+
+
+
+    @Operation(description = "Отправка кооперативной почты.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Сообщение отправлено на кооперативную почту.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Адрес электронной почты не найден.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @PostMapping("/work/send")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto sendWorkEmail(final @RequestBody @Valid EmailMessageDto dto);
+
+
+    @Operation(description = "Получение списка писем с пагинацией.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Список получен.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Пользователь не найден.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @GetMapping("/list/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto getEmailList(final @PathVariable @Valid UUID id);
 }
 

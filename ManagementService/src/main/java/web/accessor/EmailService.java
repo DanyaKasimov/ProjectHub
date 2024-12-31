@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import web.dto.response.EmailCreateDto;
+import web.dto.response.email.EmailCreateDto;
 import web.dto.response.ResponseDto;
 
 import java.util.UUID;
 
-@FeignClient("email-service")
+@FeignClient(name = "email-service")
 @Component
 public interface EmailService {
 

@@ -12,6 +12,10 @@ import web.accessor.EmailService;
 import web.dto.request.SignUpDto;
 import web.dto.request.UserAddDto;
 import web.dto.response.*;
+import web.dto.response.email.EmailContentDto;
+import web.dto.response.email.EmailCreateDto;
+import web.dto.response.email.EmailDto;
+import web.dto.response.email.EmailSendDto;
 import web.exception.InvalidDataException;
 import web.exception.NoDataFoundException;
 import web.mappers.UserMapper;
@@ -96,12 +100,12 @@ public class UserServiceImpl implements UserService {
                         .build()
         );
 
-        sendEmail(signUpDto.getEmail(), emailResponse.getName(), username, password);
+        sendEmail(signUpDto.getEmail(), emailResponse.getName(), username, password, "email-start");
 
         return userMapper.toDto(user);
     }
 
-    private void sendEmail(String emailRoot, String emailCompany, String username, String password) {
+    private void sendEmail(String emailRoot, String emailCompany, String username, String password, String template) {
         val emailContent = EmailContentDto.builder()
                 .email(emailCompany)
                 .password(password)
@@ -110,14 +114,14 @@ public class UserServiceImpl implements UserService {
 
         val emailMessage = EmailSendDto.builder()
                 .address(emailRoot)
-                .content(generateEmailBody(emailContent))
+                .content(generateEmailBody(emailContent, template))
                 .build();
 
         kafkaTemplate.send(topic, emailMessage);
     }
 
-    private String generateEmailBody(EmailContentDto emailDto) {
-        String body = FileHandler.loadFromTemplate("email");
+    private String generateEmailBody(EmailContentDto emailDto, String template) {
+        String body = FileHandler.loadFromTemplate(template);
         body = body.replace("{{ email }}", emailDto.getEmail());
         body = body.replace("{{ username }}", emailDto.getUsername());
         body = body.replace("{{ password }}", emailDto.getPassword());
@@ -163,7 +167,7 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
 
         String email = emailService.getEmail(user.getEmailId()).getResult().toString();
-        sendEmail(user.getEmailRoot(), email, user.getUsername(), password);
+        sendEmail(user.getEmailRoot(), email, user.getUsername(), password, "email-update");
     }
 
 

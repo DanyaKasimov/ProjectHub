@@ -1,4 +1,4 @@
-package web.dto.response;
+package web.dto.response.email;
 
 import lombok.Data;
 

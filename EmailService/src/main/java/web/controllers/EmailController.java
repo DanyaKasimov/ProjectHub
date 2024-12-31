@@ -6,8 +6,10 @@ import lombok.val;
 import org.springframework.web.bind.annotation.RestController;
 import web.api.EmailApi;
 import web.dto.request.EmailCreateDto;
-import web.dto.response.EmailSendDto;
+import web.dto.request.EmailMessageDto;
+import web.dto.response.email.EmailSendDto;
 import web.dto.response.ResponseDto;
+import web.service.EmailMessageService;
 import web.service.EmailService;
 
 import java.util.UUID;
@@ -19,6 +21,8 @@ public class EmailController implements EmailApi {
 
     private final EmailService emailService;
 
+    private final EmailMessageService emailMessageService;
+
     @Override
     public ResponseDto createEmail(final EmailCreateDto emailCreateDto) {
         log.info("Поступил запрос на создание электронной почты. Входные данные: {}", emailCreateDto);
@@ -27,13 +31,15 @@ public class EmailController implements EmailApi {
         return ResponseDto.builder().result(data).build();
     }
 
+
     @Override
     public ResponseDto sendEmail(final EmailSendDto sendDto) {
-        log.info("Поступил запрос на отправку письма на электронную почту. Address: {}", sendDto.getAddress());
+        log.info("Поступил запрос на отправку письма на электронную почту. Адрес: {}", sendDto.getAddress());
 
         emailService.sendEmail(sendDto);
         return ResponseDto.builder().result("Письмо отправлено.").build();
     }
+
 
     @Override
     public ResponseDto getEmail(final UUID id) {
@@ -41,5 +47,19 @@ public class EmailController implements EmailApi {
 
         val email = emailService.findById(id);
         return ResponseDto.builder().result(email.getName()).build();
+    }
+
+
+    @Override
+    public ResponseDto sendWorkEmail(final EmailMessageDto dto) {
+        log.info("Поступил запрос на отправку сообщения на кооперативную почту. Адрес: {}", dto.getToName());
+
+        emailMessageService.sendWorkEmail(dto);
+        return ResponseDto.builder().result("Письмо отправлено.").build();
+    }
+
+    @Override
+    public ResponseDto getEmailList(UUID id) {
+        return null;
     }
 }

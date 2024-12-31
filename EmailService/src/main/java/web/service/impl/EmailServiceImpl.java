@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import web.dto.request.EmailCreateDto;
-import web.dto.response.EmailSendDto;
-import web.dto.response.EmailDto;
+import web.dto.response.email.EmailSendDto;
+import web.dto.response.email.EmailDto;
 import web.exception.InvalidDataException;
 import web.exception.NoDataFoundException;
 import web.mappers.EmailMapper;
@@ -59,10 +59,19 @@ public class EmailServiceImpl implements EmailService {
         kafkaTemplate.send(topic, dto);
     }
 
+
     @Override
-    public EmailDto findById(UUID id) {
+    public EmailDto findById(final UUID id) {
         Email email = emailRepository.findById(id).orElseThrow(() ->
                 new NoDataFoundException(String.format("Email с ID = %s не найден", id)));
+        return emailMapper.toDto(email);
+    }
+
+
+    @Override
+    public EmailDto findByName(final String name) {
+        Email email = emailRepository.findByName(name).orElseThrow(() ->
+                new NoDataFoundException(String.format("Электронная почта с именем %s не найдена.", name)));
         return emailMapper.toDto(email);
     }
 }

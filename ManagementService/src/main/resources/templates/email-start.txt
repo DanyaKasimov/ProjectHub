@@ -1,0 +1,8 @@
+Добро пожаловать на платформу "ProjectHub".
+
+Ваш email: {{ email }}
+Ваш username: {{ username }}
+Ваш password: {{ password }}
+
+
+

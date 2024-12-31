@@ -21,6 +21,20 @@ CREATE TABLE email_management.emails
 );
 
 
+CREATE TABLE email_management.email_messages
+(
+    id         UUID default gen_random_uuid() NOT NULL,
+    from_id    UUID                           NOT NULL,
+    to_id      UUID                           NOT NULL,
+    title      VARCHAR(255),
+    body       VARCHAR(1000),
+    created_at TIMESTAMP                      NOT NULL,
+    primary key (id),
+    foreign key (from_id) references email_management.emails (id),
+    foreign key (to_id) references email_management.emails (id)
+);
+
+
 CREATE TABLE user_management.users
 (
     id         UUID default gen_random_uuid() NOT NULL,
