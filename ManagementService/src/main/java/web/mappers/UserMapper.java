@@ -19,4 +19,5 @@ public interface UserMapper {
     UserDto toDto(User user);
 
     List<UserDataDto> toDtosLite(List<User> user);
+
 }

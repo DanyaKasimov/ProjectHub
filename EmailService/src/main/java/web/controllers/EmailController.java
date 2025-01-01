@@ -62,9 +62,17 @@ public class EmailController implements EmailApi {
 
     @Override
     public ResponseDto getEmailList(final UUID id, final Pageable pageable) {
-        log.info("Поступил запрос на получения списка писем с пагинацией. Владелец: {}", id);
+        log.info("Поступил запрос на получение списка писем с пагинацией. Владелец: {}", id);
 
         val list = emailMessageService.getEmailList(id, pageable);
         return ResponseDto.builder().result(list).build();
+    }
+
+    @Override
+    public ResponseDto getWorkEmail(final UUID id) {
+        log.info("Поступил запрос на получение письма. ID: {}", id);
+
+        val emailMessage = emailMessageService.findById(id);
+        return ResponseDto.builder().result(emailMessage).build();
     }
 }

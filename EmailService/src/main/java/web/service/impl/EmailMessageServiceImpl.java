@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.dto.request.EmailMessageDto;
 import web.dto.response.email.EmailDto;
+import web.exception.NoDataFoundException;
 import web.model.EmailMessage;
 import web.repositories.EmailMessageRepository;
 import web.service.EmailMessageService;
@@ -48,11 +49,20 @@ public class EmailMessageServiceImpl implements EmailMessageService {
 
 
     @Override
-    public Page<EmailMessage> getEmailList(UUID id, Pageable pageable) {
+    public Page<EmailMessage> getEmailList(final UUID id, final Pageable pageable) {
         log.info("Получение списка писем. ID: {}", id);
 
         emailService.findById(id);
         return emailMessageRepository.findAllByToId(id, pageable);
+    }
+
+
+    @Override
+    public EmailMessage findById(final UUID id) {
+        log.info("Получение письма. ID: {}", id);
+
+        return emailMessageRepository.findById(id).orElseThrow(() ->
+                new NoDataFoundException(String.format("Письмо с ID = %s не найдено", id)));
     }
 
 }

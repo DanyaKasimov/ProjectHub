@@ -14,4 +14,6 @@ public interface EmailMessageService {
     void sendWorkEmail(final EmailMessageDto dto);
 
     Page<EmailMessage> getEmailList(final UUID id, final Pageable pageable);
+
+    EmailMessage findById(final UUID id);
 }

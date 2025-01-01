@@ -35,7 +35,7 @@ public interface EmailApi {
                     )
             ),
     })
-    @PostMapping("/create")
+    @PostMapping("/work/create")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto createEmail(final @RequestBody @Valid EmailCreateDto signInDto);
 
@@ -75,7 +75,7 @@ public interface EmailApi {
                     )
             ),
     })
-    @GetMapping("/get/{id}")
+    @GetMapping("/get-name/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto getEmail(final @PathVariable @Valid UUID id);
 
@@ -128,5 +128,29 @@ public interface EmailApi {
     ResponseDto getEmailList(final @PathVariable @Valid UUID id,
                              @Parameter(description = "Пагинация списка.", required = true)
                              @ParameterObject @PageableDefault Pageable pageable);
+
+
+    @Operation(description = "Получение письма.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Письмо получено.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Письмо не найдено.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @GetMapping("/work/get/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto getWorkEmail(final @PathVariable @Valid UUID id);
 }
 

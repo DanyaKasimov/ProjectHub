@@ -15,9 +15,9 @@ import java.util.UUID;
 @Component
 public interface EmailService {
 
-    @PostMapping("api/v1/email/create")
+    @PostMapping("api/v1/email/work/create")
     ResponseDto createEmail(final @RequestBody EmailCreateDto dto);
 
-    @GetMapping("api/v1/email/get/{id}")
+    @GetMapping("api/v1/email/get-name/{id}")
     ResponseDto getEmail(final @PathVariable UUID id);
 }
