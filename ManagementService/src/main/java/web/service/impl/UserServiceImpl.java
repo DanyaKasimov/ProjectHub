@@ -199,6 +199,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDataDto findById(final UUID id) {
+        val user = userRepository.findById(id).orElseThrow(
+                () -> new NoDataFoundException("Пользователь не найден.")
+        );
+        return userMapper.toDtoLite(user);
+    }
+
+    @Override
     public List<UUID> findAllIdsByCompany(UUID companyID) {
         Company company = companyService.findById(companyID);
         return userRepository.findAllByCompany(company);

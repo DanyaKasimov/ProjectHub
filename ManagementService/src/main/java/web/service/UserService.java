@@ -23,6 +23,8 @@ public interface UserService {
 
     UserDataDto findByUsername(final String username);
 
+    UserDataDto findById(final UUID id);
+
     List<UUID> findAllIdsByCompany(final UUID companyID);
 
     void deleteEmployeesTimer(List<UUID> ids);

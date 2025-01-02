@@ -2,10 +2,12 @@ package web.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.web.bind.annotation.RestController;
 import web.api.ProfileApi;
 import web.dto.request.InfoDto;
 import web.dto.response.ResponseDto;
+import web.service.InfoService;
 
 
 import java.util.UUID;
@@ -14,6 +16,8 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 public class ProfileController implements ProfileApi {
+
+    private final InfoService infoService;
 
     @Override
     public ResponseDto getInfo(final UUID id) {
@@ -26,7 +30,8 @@ public class ProfileController implements ProfileApi {
     public ResponseDto addInfo(final InfoDto dto) {
         log.info("Поступил запрос на добавление данных пользователя. Входные данные: {}", dto);
 
-        return null;
+        val info = infoService.addInfo(dto);
+        return ResponseDto.builder().result(info).build();
     }
 
     @Override

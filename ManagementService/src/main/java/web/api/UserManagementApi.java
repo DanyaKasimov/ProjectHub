@@ -45,6 +45,30 @@ public interface UserManagementApi {
     ResponseDto addEmployee(final @RequestBody @Valid SignUpDto userAddDto);
 
 
+    @Operation(description = "Получение данных сотрудника.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Данные получены успешно.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Пользователь не найден.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @GetMapping("/get-user/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto getEmployee(final @PathVariable @Valid UUID id);
+
+
     @Operation(description = "Обновление сотрудника.")
     @ApiResponses(value = {
             @ApiResponse(

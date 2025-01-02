@@ -29,6 +29,14 @@ public class UserManagementController implements UserManagementApi {
         return ResponseDto.builder().result(data).build();
     }
 
+    @Override
+    public ResponseDto getEmployee(final UUID id) {
+        log.info("Поступил запрос на получение данных сотрудника. ID: {}", id);
+
+        val data = userService.findById(id);
+        return ResponseDto.builder().result(data).build();
+    }
+
 
     @Override
     public ResponseDto updateEmployee(final UserAddDto dto) {
