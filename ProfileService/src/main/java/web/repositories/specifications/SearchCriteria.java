@@ -1,7 +1,7 @@
 package web.repositories.specifications;
 
 import lombok.Getter;
-import web.dto.request.filter.Item;
+import web.dto.request.Item;
 
 import java.util.ArrayList;
 import java.util.List;

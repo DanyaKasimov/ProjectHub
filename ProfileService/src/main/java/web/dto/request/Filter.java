@@ -1,4 +1,4 @@
-package web.dto.request.filter;
+package web.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;

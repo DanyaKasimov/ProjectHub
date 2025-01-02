@@ -3,7 +3,7 @@ package web.repositories.specifications;
 
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
-import web.dto.request.filter.Item;
+import web.dto.request.Item;
 import web.exception.InvalidDataException;
 
 import java.util.UUID;

@@ -1,5 +1,6 @@
 CREATE SCHEMA user_management;
 CREATE SCHEMA email_management;
+CREATE SCHEMA profile_management;
 
 
 CREATE TABLE user_management.companies
@@ -54,4 +55,31 @@ CREATE TABLE user_management.users
     foreign key (company_id) references user_management.companies (id),
     foreign key (email_id) references email_management.emails (id)
 );
+
+
+CREATE TABLE profile_management.info
+(
+    id           UUID default gen_random_uuid() NOT NULL,
+    user_id      UUID                           NOT NULL,
+    phone_number VARCHAR(1000),
+    address      VARCHAR(300),
+    birthday     TIMESTAMP,
+    created_at   TIMESTAMP                      NOT NULL,
+    updated_at   TIMESTAMP                      NOT NULL,
+    primary key (id),
+    foreign key (user_id) references user_management.users (id)
+);
+
+
+CREATE TABLE profile_management.avatars
+(
+    id         UUID default gen_random_uuid() NOT NULL,
+    info_id    uuid                           not null,
+    url        VARCHAR(1000)                  NOT NULL,
+    created_at TIMESTAMP                      NOT NULL,
+    updated_at TIMESTAMP                      NOT NULL,
+    primary key (id),
+    foreign key (info_id) references profile_management.info (id)
+);
+
 
