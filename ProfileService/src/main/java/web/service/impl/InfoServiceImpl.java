@@ -3,6 +3,8 @@ package web.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import web.accessor.ManagementService;
 import web.dto.request.InfoDto;
@@ -46,6 +48,7 @@ public class InfoServiceImpl implements InfoService {
     }
 
     @Override
+    @CacheEvict(value = "info.data", key = "#infoDto.id")
     public Info updateInfo(final InfoDto infoDto) {
         log.info("InfoService: обновление информации о сотруднике.");
 
@@ -54,7 +57,9 @@ public class InfoServiceImpl implements InfoService {
             throw new NoDataFoundException("Пользователь не найден.");
         }
 
-        val info = findById(infoDto.getId());
+        val info = infoRepository.findById(infoDto.getId()).orElseThrow(
+                () -> new NoDataFoundException("Данные не найдены.")
+        );
 
         info.setUserId(info.getUserId());
         info.setPhoneNumber(infoDto.getPhoneNumber());
@@ -68,9 +73,10 @@ public class InfoServiceImpl implements InfoService {
 
 
     @Override
+    @Cacheable(value = "info.data", key = "#id")
     public Info findById(final UUID id) {
         return infoRepository.findById(id).orElseThrow(
-                () -> new NoDataFoundException("Пользователь не найден.")
+                () -> new NoDataFoundException("Данные не найдены.")
         );
     }
 }

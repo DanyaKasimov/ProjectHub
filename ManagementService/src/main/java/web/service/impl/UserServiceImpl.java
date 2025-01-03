@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -133,6 +135,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"users.data.username", "users.data.id"}, key = "#dto.id")
     public void updateEmployee(final UserAddDto dto) {
         log.info("Обновление данных сотрудника.");
 
@@ -157,6 +160,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"users.data.username", "users.data.id"}, key = "#id")
     public void updatePasswordEmployee(final UUID id) {
         log.info("Обновление пароля сотрудника.");
 
@@ -179,21 +183,28 @@ public class UserServiceImpl implements UserService {
     public void deleteEmployees(final List<UUID> ids) {
         log.info("Удаление сотрудников начато.");
 
-        ids.forEach((id) -> {
-            userRepository.delete(
-                    userRepository
-                            .findById(id)
-                            .orElseThrow(() -> new NoDataFoundException(
-                                    String.format("Сотрудник c ID = %s не найден.", id)
-                            )));
-        });
+        ids.forEach(this::deleteEmployee);
 
         log.info("Сотрудники удалены.");
+    }
 
+
+
+    // TODO Возможно сломается из за кэша
+    @Transactional
+    @CacheEvict(value = {"users.data.username", "users.data.id"}, key = "#id")
+    protected void deleteEmployee(final UUID id) {
+        userRepository.delete(
+                userRepository
+                        .findById(id)
+                        .orElseThrow(() -> new NoDataFoundException(
+                                String.format("Сотрудник c ID = %s не найден.", id)
+                        )));
     }
 
 
     @Override
+    @Cacheable(value = "users.data.username", key = "#username")
     public UserDataDto findByUsername(final String username) {
         val user = userRepository.findByUsername(username).orElseThrow(
                 () -> new NoDataFoundException("Пользователь не найден.")
@@ -201,7 +212,9 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDtoLite(user);
     }
 
+
     @Override
+    @Cacheable(value = "users.data.id", key = "#id")
     public UserDataDto findById(final UUID id) {
         val user = userRepository.findById(id).orElseThrow(
                 () -> new NoDataFoundException("Пользователь не найден.")
@@ -210,6 +223,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "company.users.list", key = "#id + '_' + #pageable.pageNumber")
     public Page<UserDataDto> findAllByCompany(final UUID id, final Pageable pageable) {
         Company company = companyService.findById(id);
 
@@ -224,7 +238,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UUID> findAllIdsByCompany(UUID companyID) {
+    @Cacheable(value = "company.users.id.list", key = "#companyID")
+    public List<UUID> findAllIdsByCompany(final UUID companyID) {
         Company company = companyService.findById(companyID);
         return userRepository.findAllByCompany(company);
     }

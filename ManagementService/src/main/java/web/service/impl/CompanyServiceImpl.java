@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import web.dto.request.CompanyDto;
 import web.exception.InvalidDataException;
@@ -60,19 +62,19 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Company findById(UUID id) {
+    public Company findById(final UUID id) {
         return companyRepository.findById(id).orElseThrow(
                 () -> new NoDataFoundException(String.format("Компания с ID = (%s) не найдена.", id)));
     }
 
     @Override
-    public void requestCompanyDeletion(UUID id) {
+    public void requestCompanyDeletion(final UUID id) {
         findById(id);
         deletionRequestService.requestDeletion(id, "COMPANY");
     }
 
     @Override
-    public void cancelCompanyDeletion(UUID id) {
+    public void cancelCompanyDeletion(final UUID id) {
         findById(id);
         deletionRequestService.cancelDeletion(id, "COMPANY");
     }
