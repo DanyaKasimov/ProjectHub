@@ -1,12 +1,16 @@
 package web.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -67,6 +71,32 @@ public interface UserManagementApi {
     @GetMapping("/get-user/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto getEmployee(final @PathVariable @Valid UUID id);
+
+
+    @Operation(description = "Получение списка сотрудников определенной компании.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Данные получены успешно.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Компания не найдена.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @GetMapping("/company-list/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto getEmployees(final @PathVariable @Valid UUID id,
+                             @Parameter(description = "Пагинация списка.", required = true)
+                             @ParameterObject @PageableDefault Pageable pageable );
 
 
     @Operation(description = "Обновление сотрудника.")

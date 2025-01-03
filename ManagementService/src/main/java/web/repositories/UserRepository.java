@@ -1,5 +1,7 @@
 package web.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,10 +20,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsUserById(UUID id);
 
-//    boolean existsByEmailAndCompany(UUID email, Company company);
-
     @Query("select u.id from User u where u.company = :company")
     List<UUID> findAllByCompany(@Param("company") Company company);
 
     Optional<User> findByUsername(String username);
+
+    Page<User> findAllByCompany(Company company, Pageable pageable);
 }

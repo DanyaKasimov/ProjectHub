@@ -3,6 +3,7 @@ package web.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 import web.dto.response.UserDto;
 import web.dto.response.UserDataDto;
 import web.model.User;

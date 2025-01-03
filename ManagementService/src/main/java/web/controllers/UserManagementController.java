@@ -3,6 +3,7 @@ package web.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 import web.api.UserManagementApi;
 import web.dto.request.SignUpDto;
@@ -34,6 +35,15 @@ public class UserManagementController implements UserManagementApi {
         log.info("Поступил запрос на получение данных сотрудника. ID: {}", id);
 
         val data = userService.findById(id);
+        return ResponseDto.builder().result(data).build();
+    }
+
+
+    @Override
+    public ResponseDto getEmployees(final UUID id, final Pageable pageable) {
+        log.info("Поступил запрос на получение данных сотрудников определенной компании. ID: {}", id);
+
+        val data = userService.findAllByCompany(id, pageable);
         return ResponseDto.builder().result(data).build();
     }
 

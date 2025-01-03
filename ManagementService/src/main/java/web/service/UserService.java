@@ -1,11 +1,12 @@
 package web.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.dto.request.SignUpDto;
 import web.dto.request.UserAddDto;
 import web.dto.response.UserDto;
 import web.dto.response.UserDataDto;
-import web.model.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,8 @@ public interface UserService {
     UserDataDto findByUsername(final String username);
 
     UserDataDto findById(final UUID id);
+
+    Page<UserDataDto> findAllByCompany(final UUID id, final Pageable pageable);
 
     List<UUID> findAllIdsByCompany(final UUID companyID);
 

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -205,6 +208,20 @@ public class UserServiceImpl implements UserService {
         );
         return userMapper.toDtoLite(user);
     }
+
+    @Override
+    public Page<UserDataDto> findAllByCompany(final UUID id, final Pageable pageable) {
+        Company company = companyService.findById(id);
+
+        Page<User> users = userRepository.findAllByCompany(company, pageable);
+
+        List<UserDataDto> usersDto = users.stream()
+                .map(userMapper::toDtoLite)
+                .toList();
+
+        return new PageImpl<>(usersDto, pageable, users.getTotalElements());
+    }
+
 
     @Override
     public List<UUID> findAllIdsByCompany(UUID companyID) {
