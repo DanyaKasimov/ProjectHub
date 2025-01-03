@@ -23,8 +23,10 @@ public class ProfileController implements ProfileApi {
     public ResponseDto getInfo(final UUID id) {
         log.info("Поступил запрос на получение данных пользователя. ID: {}", id);
 
-        return null;
+        val info = infoService.findById(id);
+        return ResponseDto.builder().result(info).build();
     }
+
 
     @Override
     public ResponseDto addInfo(final InfoDto dto) {
@@ -34,11 +36,13 @@ public class ProfileController implements ProfileApi {
         return ResponseDto.builder().result(info).build();
     }
 
+
     @Override
     public ResponseDto updateInfo(final InfoDto dto) {
         log.info("Поступил запрос на обновление данных пользователя. Входные данные: {}", dto);
 
-        return null;
+        val info = infoService.updateInfo(dto);
+        return ResponseDto.builder().result(info).build();
     }
 
 

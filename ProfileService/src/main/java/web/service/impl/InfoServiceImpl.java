@@ -12,6 +12,7 @@ import web.repositories.specifications.InfoRepository;
 import web.service.InfoService;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,5 +43,34 @@ public class InfoServiceImpl implements InfoService {
                         .build()
         );
 
+    }
+
+    @Override
+    public Info updateInfo(final InfoDto infoDto) {
+        log.info("InfoService: обновление информации о сотруднике.");
+
+        val user = managementService.getEmployee(infoDto.getUserId()).getResult();
+        if (user == null) {
+            throw new NoDataFoundException("Пользователь не найден.");
+        }
+
+        val info = findById(infoDto.getId());
+
+        info.setUserId(info.getUserId());
+        info.setPhoneNumber(infoDto.getPhoneNumber());
+        info.setBirthday(infoDto.getBirthday());
+        info.setAddress(infoDto.getAddress());
+        info.setCreatedAt(info.getCreatedAt());
+        info.setUpdatedAt(LocalDateTime.now());
+
+        return infoRepository.save(info);
+    }
+
+
+    @Override
+    public Info findById(final UUID id) {
+        return infoRepository.findById(id).orElseThrow(
+                () -> new NoDataFoundException("Пользователь не найден.")
+        );
     }
 }
