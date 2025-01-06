@@ -26,7 +26,7 @@ spring:
 
 logging:
   file:
-    path: ./logs
+    path: ./ProfileService/logs
   level:
     root: info
     org:
