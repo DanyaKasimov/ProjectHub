@@ -1,0 +1,7 @@
+:root {
+    --bg-color-1: white;
+    --color-text-1: #3d3d3d;
+    --line-non-active: #c4c4c4;
+    --line-active: #7500ff;
+    --border-input: 1px #b7b7b7 solid;
+}
