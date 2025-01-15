@@ -7,14 +7,32 @@
       <LogoTextComponent class="logo-text" v-if="!isMobile"/>
     </div>
     <div class="container-content">
-      <h1 class="content-header">Регистрация компании</h1>
-      <div class="steps">
-        <div class="step-line" :class="{'step-active' : isCountStep >= 0}"></div>
-        <div class="step-line" :class="{'step-active' : isCountStep === 1}"></div>
+      <div v-if="isCountStep === 0">
+        <h1 class="content-header">Регистрация компании</h1>
+        <div class="steps">
+          <div class="step-line" :class="{'step-active' : isCountStep >= 0}"></div>
+          <div class="step-line" :class="{'step-active' : isCountStep === 1}"></div>
+        </div>
+        <InputComponent class="inputs" :name="'Название'" :description="'Введите полное название компании.'"/>
+        <InputComponent class="inputs" :name="'ИНН'" :description="'Введите ИНН компании (10 цифр).'"/>
+        <InputComponent class="inputs" :name="'Домен'" :description="'Введите домен компании.'"/>
+        <button class="button-next" @click="nextStep">Следующий шаг</button>
       </div>
-      <InputComponent class="inputs" :name="'Название'" :description="'Введите полное название компании.'"/>
-      <InputComponent class="inputs" :name="'ИНН'" :description="'Введите ИНН компании (10 цифр).'"/>
-      <InputComponent class="inputs" :name="'Домен'" :description="'Введите домен компании.'"/>
+
+      <div v-else>
+        <h1 class="content-header">Регистрация компании</h1>
+        <div class="steps">
+          <div class="step-line" :class="{'step-active' : isCountStep >= 0}"></div>
+          <div class="step-line" :class="{'step-active' : isCountStep === 1}"></div>
+        </div>
+        <div class="mini-inputs">
+          <InputComponent class="inputs second margin-2" :name="'Имя'" :description="'Введите ваше имя.'"/>
+          <InputComponent class="inputs second margin-2" :name="'Фамилия'" :description="'Введите вашу фамилию.'"/>
+        </div>
+        <InputComponent class="inputs margin-2" :name="'Отчество'" :description="'Введите ваше отчество.'"/>
+        <InputComponent class="inputs margin-2" :name="'Должность'" :description="'Введите вашу должность.'"/>
+        <InputComponent class="inputs margin-2" :name="'Почта'" :description="'Введите вашу почту.'"/>
+      </div>
     </div>
   </div>
 </template>
@@ -41,6 +59,10 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", updateScreenSize);
 });
+
+const nextStep = () => {
+  if (isCountStep < 1) isCountStep.value++;
+}
 </script>
 
 <style scoped>
@@ -94,7 +116,7 @@ onUnmounted(() => {
   right: 2%;
   transform: translateY(-50%);
   width: 40%;
-  height: 88vh;
+  height: 540px;
   background-color: var(--bg-color-1, rgba(255, 255, 255, 0.8));
   border-radius: 20px;
 }
@@ -153,6 +175,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
 }
+
 .step-line {
   height: 5px;
   width: 48%;
@@ -167,6 +190,41 @@ onUnmounted(() => {
 .inputs {
   margin: 0 auto 60px;
   width: 95%;
+}
+
+.second {
+  width: 49%;
+  margin-left: 0;
+  padding-left: 0;
+}
+.second:last-child {
+  margin-right: 0;
+}
+.mini-inputs {
+  display: flex;
+  margin: 0 auto;
+  justify-content: space-between;
+  width: 95%;
+}
+
+.margin-2 {
+  margin: 0 auto 50px;
+
+}
+.button-next {
+  width: 95%;
+  margin-left: 2.5%;
+  border: none;
+  background-color: var(--line-active);
+  height: 45px;
+  border-radius: 10px;
+  color: var(--bg-color-1);
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.button-next:hover {
+  background-color: var(--line-active-hover);
 }
 
 </style>
