@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.accessor.EmailService;
 import web.dto.request.SignUpDto;
-import web.dto.request.UserAddDto;
+import web.dto.request.UserEditDto;
 import web.dto.response.*;
 import web.dto.response.email.EmailContentDto;
 import web.dto.response.email.EmailCreateDto;
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = {"users.data.username", "users.data.id"}, key = "#dto.id")
-    public void updateEmployee(final UserAddDto dto) {
+    public void updateEmployee(final UserEditDto dto) {
         log.info("Обновление данных сотрудника.");
 
         val user = userRepository.findById(dto.getId()).orElseThrow(

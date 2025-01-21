@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import web.dto.request.SignUpDto;
-import web.dto.request.UserAddDto;
+import web.dto.request.UserEditDto;
 import web.dto.response.ResponseDto;
 
 import java.util.List;
@@ -129,7 +129,7 @@ public interface UserManagementApi {
     @PostMapping("/update")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    ResponseDto updateEmployee(final @RequestBody @Valid UserAddDto dto);
+    ResponseDto updateEmployee(final @RequestBody @Valid UserEditDto dto);
 
 
 

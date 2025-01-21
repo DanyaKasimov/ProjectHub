@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.dto.request.SignUpDto;
-import web.dto.request.UserAddDto;
+import web.dto.request.UserEditDto;
 import web.dto.response.UserDto;
 import web.dto.response.UserDataDto;
 
@@ -16,7 +16,7 @@ public interface UserService {
 
     UserDto addEmployee(final SignUpDto dto);
 
-    void updateEmployee(final UserAddDto dto);
+    void updateEmployee(final UserEditDto dto);
 
     void deleteEmployees(final List<UUID> ids);
 

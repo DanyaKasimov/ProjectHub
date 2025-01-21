@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 import web.api.UserManagementApi;
 import web.dto.request.SignUpDto;
-import web.dto.request.UserAddDto;
+import web.dto.request.UserEditDto;
 import web.dto.response.ResponseDto;
 import web.service.UserService;
 
@@ -49,7 +49,7 @@ public class UserManagementController implements UserManagementApi {
 
 
     @Override
-    public ResponseDto updateEmployee(final UserAddDto dto) {
+    public ResponseDto updateEmployee(final UserEditDto dto) {
         log.info("Поступил запрос на обновление данных сотрудника. Входные данные: {}", dto);
 
         userService.updateEmployee(dto);

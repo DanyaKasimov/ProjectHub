@@ -1,54 +1,79 @@
 <template>
-  <div class="container-register" :class="{ mobile: isMobile, desktop: !isMobile }">
+  <div v-if="isDesktop">
+
     <div class="container-video">
       <video autoplay muted loop class="background-video">
         <source :src="poster" type="video/mp4"/>
       </video>
-      <LogoTextComponent class="logo-text" v-if="!isMobile"/>
+      <LogoTextComponent class="logo-text"/>
     </div>
-    <div class="container-content">
-      <div v-if="isCountStep === 0">
-        <h1 class="content-header">Регистрация компании</h1>
-        <div class="steps">
-          <div class="step-line" :class="{'step-active' : isCountStep >= 0}"></div>
-          <div class="step-line" :class="{'step-active' : isCountStep === 1}"></div>
-        </div>
-        <InputComponent class="inputs" :name="'Название'" :description="'Введите полное название компании.'"/>
-        <InputComponent class="inputs" :name="'ИНН'" :description="'Введите ИНН компании (10 цифр).'"/>
-        <InputComponent class="inputs" :name="'Домен'" :description="'Введите домен компании.'"/>
-        <button class="button-next" @click="nextStep">Следующий шаг</button>
-      </div>
 
-      <div v-else>
-        <h1 class="content-header">Регистрация компании</h1>
-        <div class="steps">
-          <div class="step-line" :class="{'step-active' : isCountStep >= 0}"></div>
-          <div class="step-line" :class="{'step-active' : isCountStep === 1}"></div>
+    <div class="container-content">
+      <h1 class="content-header">Регистрация компании</h1>
+
+      <transition name="fade">
+        <div v-if="isFirstWindow" class="content-first">
+          <InputComponent v-model="companyData.name" :name="'Название'" :description="'Введите полное название компании.'" class="input-default"/>
+          <InputComponent v-model="companyData.inn" :name="'ИНН'" :description="'Введите ИНН компании.'" class="input-default"/>
+          <InputComponent v-model="companyData.domain" :name="'Домен'" :description="'Введите домен компании.'" class="input-default"/>
+          <button style="margin-top: 8%" @click="goToNextStep" class="button-next">Следующий шаг</button>
         </div>
-        <div class="mini-inputs">
-          <InputComponent class="inputs second margin-2" :name="'Имя'" :description="'Введите ваше имя.'"/>
-          <InputComponent class="inputs second margin-2" :name="'Фамилия'" :description="'Введите вашу фамилию.'"/>
+      </transition>
+
+      <transition name="fade">
+        <div v-if="!isFirstWindow" class="content-second">
+          <h2 class="content-second-header">Введите данные первого сотрудника компании</h2>
+          <InputComponent v-model="employeeData.name" :name="'Имя'" class="input-default-2"/>
+          <InputComponent v-model="employeeData.surname" :name="'Фамилия'" class="input-default-2"/>
+          <InputComponent v-model="employeeData.patronymic" :name="'Отчество'" class="input-default-2"/>
+          <InputComponent v-model="employeeData.position" :name="'Должность'" class="input-default-2"/>
+          <InputComponent v-model="employeeData.email" :name="'Электронная почта'" class="input-default-2"/>
+          <button @click="registerCompany" style="margin-top: 5%" class="button-next">Зарегистрировать компанию</button>
+          <button style="margin-top: 1%" @click="returnToFirstWindow" class="button-back">Вернуться на предыдущий шаг</button>
         </div>
-        <InputComponent class="inputs margin-2" :name="'Отчество'" :description="'Введите ваше отчество.'"/>
-        <InputComponent class="inputs margin-2" :name="'Должность'" :description="'Введите вашу должность.'"/>
-        <InputComponent class="inputs margin-2" :name="'Почта'" :description="'Введите вашу почту.'"/>
-      </div>
+      </transition>
     </div>
   </div>
-</template>
 
+  <div v-else>
+    <!-- Контент для мобильных -->
+  </div>
+</template>
 <script setup>
-import {ref, onMounted, onUnmounted} from "vue";
+import { ref, reactive, onMounted, onUnmounted } from "vue";
 import poster from "@/assets/poster.mp4";
 import LogoTextComponent from "@/components/LogoTextComponent.vue";
-import InputComponent from "@/components/InputComponent.vue";
+import InputComponent from "@/components/InputComponent2.vue";
 
-const isMobile = ref(false);
-const isCountStep = ref(0);
+const companyData = reactive({
+  name: '',
+  inn: '',
+  domain: '',
+})
 
+const employeeData = reactive({
+  name: '',
+  surname: '',
+  patronymic: '',
+  position: '',
+  companyId: '',
+  role: '',
+  email: '',
+})
+
+const isDesktop = ref(true);
+const isFirstWindow = ref(true);
 
 const updateScreenSize = () => {
-  isMobile.value = window.innerWidth <= 1024;
+  isDesktop.value = window.innerWidth > 1024;
+};
+
+const goToNextStep = () => {
+  isFirstWindow.value = false;
+};
+
+const returnToFirstWindow = () => {
+  isFirstWindow.value = true;
 };
 
 onMounted(() => {
@@ -60,21 +85,14 @@ onUnmounted(() => {
   window.removeEventListener("resize", updateScreenSize);
 });
 
-const nextStep = () => {
-  if (isCountStep < 1) isCountStep.value++;
+const registerCompany = () => {
+  console.log(companyData)
+  console.log(employeeData)
 }
 </script>
 
-<style scoped>
-/* Общие стили */
-.container-register {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-}
 
+<style scoped>
 .container-video {
   position: relative;
   width: 100%;
@@ -92,139 +110,97 @@ const nextStep = () => {
   z-index: -1;
 }
 
-.container-content {
-  position: absolute;
-  top: 50%;
-  right: 2%;
-  transform: translateY(-50%);
-  width: 40%;
-  padding: 20px;
-  background-color: var(--bg-color-1, rgba(255, 255, 255, 0.8));
-  z-index: 99;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
-}
-
-/* Desktop версия */
-.container-register.desktop {
-  flex-direction: row;
-}
-
-.container-register.desktop .container-content {
-  position: absolute;
-  top: 50%;
-  right: 2%;
-  transform: translateY(-50%);
-  width: 40%;
-  height: 540px;
-  background-color: var(--bg-color-1, rgba(255, 255, 255, 0.8));
-  border-radius: 20px;
-}
-
-/* Mobile версия */
-.container-register.mobile {
-  flex-direction: column;
-}
-
-.container-register.mobile .container-video {
-  height: 20vh; /* Видео занимает верхнюю часть */
-}
-
-.container-register.mobile .container-content {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 80vh;
-  background-color: var(--bg-color-1, rgba(255, 255, 255, 0.95));
-  box-shadow: none; /* Лёгкая тень сверху */
-  border-top-left-radius: 50px; /* Закругление сверху */
-  border-top-right-radius: 50px;
-  padding: 0;
-  z-index: 1;
-}
-
-.container-register.mobile .container-video {
-  height: 20vh; /* Больше места для видео на маленьких экранах */
-}
-
-.container-register.mobile .container-content {
-  height: 80vh; /* Контент занимает оставшуюся часть экрана */
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-}
-
-.content-header {
-  width: 320px;
-  margin: 5% auto;
-  color: var(--color-text-1);
-  font-family: "Roboto Light", serif;
-  font-size: 30px;
-  font-weight: 700;
-}
-
 .logo-text {
   margin-top: 20vh;
   margin-left: 5%;
 }
 
-.steps {
-  width: 95%;
-  margin: 0 auto 40px;
-  display: flex;
-  justify-content: space-between;
+.container-content {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  height: 100vh;
+  width: 44%;
+  background-color: var(--bg-color-1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border-radius: 40px 0 0 40px;
+  z-index: 99;
 }
 
-.step-line {
-  height: 5px;
-  width: 48%;
-  background-color: var(--line-non-active);
-  border-radius: 5px;
+.content-header {
+  width: 400px;
+  margin: 13% auto 0;
+  font-family: "DejaVu Sans Mono", monospace;
 }
 
-.step-active {
-  background-color: var(--line-active);
+.input-default {
+  margin: 60px auto 0 auto;
+  width: 85%;
 }
 
-.inputs {
-  margin: 0 auto 60px;
-  width: 95%;
+.input-default-2 {
+  margin: 40px auto 0 auto;
+  width: 85%;
 }
 
-.second {
-  width: 49%;
-  margin-left: 0;
-  padding-left: 0;
-}
-.second:last-child {
-  margin-right: 0;
-}
-.mini-inputs {
-  display: flex;
-  margin: 0 auto;
-  justify-content: space-between;
-  width: 95%;
+.content-first {
+  margin-bottom: 10%;
 }
 
-.margin-2 {
-  margin: 0 auto 50px;
+.content-second {
+  margin-bottom: 5%;
+}
 
+.content-second-header {
+  width: 420px;
+  margin: 2% auto 0;
+  font-size: 16px;
+  font-family: "DejaVu Sans Mono", monospace;
+  font-weight: 100;
 }
 .button-next {
-  width: 95%;
-  margin-left: 2.5%;
+  width: 85%;
   border: none;
-  background-color: var(--line-active);
-  height: 45px;
+  height: 50px;
   border-radius: 10px;
-  color: var(--bg-color-1);
-  font-size: 18px;
-  margin-bottom: 10px;
+  color: white;
+  margin-left: 7.5%;
+  background-color: var(--line-active);
+  font-family: "DejaVu Sans Mono", monospace;
 }
 
-.button-next:hover {
-  background-color: var(--line-active-hover);
+.button-back {
+  width: 85%;
+  border: 1px solid var(--line-active);
+  height: 50px;
+  border-radius: 10px;
+  color: var(--line-active);
+  margin-left: 7.5%;
+  background-color: transparent;
+  font-family: "DejaVu Sans Mono", monospace;
 }
 
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(0);
+  transition: none;
+}
 </style>

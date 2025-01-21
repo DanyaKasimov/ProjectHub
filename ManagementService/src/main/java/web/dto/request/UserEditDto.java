@@ -4,11 +4,10 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import web.constants.Role;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
-public class UserAddDto {
+public class UserEditDto {
     private UUID id;
 
     @Length(min = 1, max = 255, message = "Длина имени должна быть от 1 до 255.")
