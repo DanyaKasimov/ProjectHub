@@ -1,6 +1,18 @@
 <template>
   <div v-if="isDesktop">
 
+    <div class="error-container">
+      <transition-group name="error-message" tag="div">
+        <div
+          class="error-message"
+          v-for="error in errors"
+          :key="error.id"
+        >
+          <div class="error-message-text">{{ error.message }}</div>
+        </div>
+      </transition-group>
+    </div>
+
     <div class="container-video">
       <video autoplay muted loop class="background-video">
         <source :src="poster" type="video/mp4"/>
@@ -13,9 +25,12 @@
 
       <transition name="fade">
         <div v-if="isFirstWindow" class="content-first">
-          <InputComponent v-model="companyData.name" :name="'Название'" :description="'Введите полное название компании.'" class="input-default"/>
-          <InputComponent v-model="companyData.inn" :name="'ИНН'" :description="'Введите ИНН компании.'" class="input-default"/>
-          <InputComponent v-model="companyData.domain" :name="'Домен'" :description="'Введите домен компании.'" class="input-default"/>
+          <InputComponent v-model="companyData.name" :name="'Название'"
+                          :description="'Введите полное название компании.'" class="input-default"/>
+          <InputComponent v-model="companyData.inn" :name="'ИНН'" :description="'Введите ИНН компании.'"
+                          class="input-default"/>
+          <InputComponent v-model="companyData.domain" :name="'Домен'" :description="'Введите домен компании.'"
+                          class="input-default"/>
           <button style="margin-top: 8%" @click="goToNextStep" class="button-next">Следующий шаг</button>
         </div>
       </transition>
@@ -29,7 +44,8 @@
           <InputComponent v-model="employeeData.position" :name="'Должность'" class="input-default-2"/>
           <InputComponent v-model="employeeData.email" :name="'Электронная почта'" class="input-default-2"/>
           <button @click="registerCompany" style="margin-top: 5%" class="button-next">Зарегистрировать компанию</button>
-          <button style="margin-top: 1%" @click="returnToFirstWindow" class="button-back">Вернуться на предыдущий шаг</button>
+          <button style="margin-top: 1%" @click="returnToFirstWindow" class="button-back">Вернуться на предыдущий шаг
+          </button>
         </div>
       </transition>
     </div>
@@ -40,10 +56,13 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted, onUnmounted } from "vue";
+import {ref, reactive, onMounted, onUnmounted} from "vue";
 import poster from "@/assets/poster.mp4";
 import LogoTextComponent from "@/components/LogoTextComponent.vue";
 import InputComponent from "@/components/InputComponent2.vue";
+import {Api} from "@/api/Api.js";
+
+const api = new Api()
 
 const companyData = reactive({
   name: '',
@@ -57,12 +76,14 @@ const employeeData = reactive({
   patronymic: '',
   position: '',
   companyId: '',
-  role: '',
+  role: 'ADMIN',
   email: '',
 })
 
 const isDesktop = ref(true);
 const isFirstWindow = ref(true);
+const errors = ref([]);
+
 
 const updateScreenSize = () => {
   isDesktop.value = window.innerWidth > 1024;
@@ -85,9 +106,49 @@ onUnmounted(() => {
   window.removeEventListener("resize", updateScreenSize);
 });
 
-const registerCompany = () => {
-  console.log(companyData)
-  console.log(employeeData)
+const companyId = ref('')
+
+const registerCompany = async () => {
+  const response = await api.post('/company/add', null, companyData);
+  if (response.ok) {
+    const responseData = await response.json();
+    companyId.value = responseData.result
+    await addEmployee()
+  } else {
+    const errorJson = await response.json();
+    addError(errorJson.errorMessage);
+  }
+};
+
+const addEmployee = async () => {
+  employeeData.companyId = companyId.value
+  const response = await api.post('/user-management/add', null, employeeData);
+  if (response.ok) {
+    const responseData = await response.json();
+    console.log(responseData.result);
+  } else {
+    const errorJson = await response.json();
+    addError(errorJson.errorMessage);
+    const resp = await api.delete('/company/delete-empty/' + companyId.value);
+    if (!resp.ok) {
+      const errorJson = await response.json();
+      addError(errorJson.errorMessage);
+    }
+  }
+};
+
+
+function addError(message) {
+  const error = {id: Date.now(), message};
+  errors.value.push(error);
+  setTimeout(() => {
+    removeError(error.id);
+  }, 4000);
+}
+
+
+function removeError(id) {
+  errors.value = errors.value.filter(error => error.id !== id);
 }
 </script>
 
@@ -159,6 +220,7 @@ const registerCompany = () => {
   font-family: "DejaVu Sans Mono", monospace;
   font-weight: 100;
 }
+
 .button-next {
   width: 85%;
   border: none;
@@ -189,6 +251,7 @@ const registerCompany = () => {
   opacity: 0;
   transform: translateY(20px);
 }
+
 .fade-enter-to {
   opacity: 1;
   transform: translateY(0);
@@ -198,9 +261,37 @@ const registerCompany = () => {
   opacity: 1;
   transform: translateY(0);
 }
+
 .fade-leave-to {
   opacity: 0;
   transform: translateY(0);
   transition: none;
+}
+
+
+.error-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.error-message {
+  background-color: rgba(255, 79, 79, 0.9);
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  width: 300px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.error-message-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  padding: 20px 0;
 }
 </style>

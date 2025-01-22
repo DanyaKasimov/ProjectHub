@@ -35,12 +35,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+
+        //TODO Расписать эндпоинты отдельно по доступу
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("api/v1/**").authenticated()
+                        .requestMatchers("api/v1/**").permitAll()
                         .requestMatchers(PERMIT_ALL).permitAll()
                         .anyRequest().authenticated()
 

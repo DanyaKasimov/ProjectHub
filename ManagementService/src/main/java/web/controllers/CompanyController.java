@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import web.api.CompanyApi;
 import web.dto.request.CompanyDto;
 import web.dto.response.ResponseDto;
+import web.exception.InvalidDataException;
 import web.service.CompanyService;
 import web.service.UserService;
 
@@ -39,6 +40,18 @@ public class CompanyController implements CompanyApi {
         userService.deleteEmployeesTimer(usersIds);
         companyService.requestCompanyDeletion(id);
         return ResponseDto.builder().result("Запрос на удаление компании прошел успешно.").build();
+    }
+
+    @Override
+    public ResponseDto deleteEmptyCompany(final UUID id) {
+        log.info("Поступил запрос на удаление пустой компании. ID: {}", id);
+
+        List<UUID> usersIds = userService.findAllIdsByCompany(id);
+        if (!usersIds.isEmpty()) {
+            throw new InvalidDataException("Удаление отменено. В компании зарегистрированы сотрудник(-и).");
+        }
+        companyService.deleteCompany(id);
+        return ResponseDto.builder().result("Компания удалена успешно.").build();
     }
 
     @Override

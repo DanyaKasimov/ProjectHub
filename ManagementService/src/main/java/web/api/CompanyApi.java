@@ -44,7 +44,6 @@ public interface CompanyApi {
     ResponseDto addCompany(final @RequestBody @Valid CompanyDto companyDto);
 
 
-
     @Operation(description = "Удаление компании.")
     @ApiResponses(value = {
             @ApiResponse(
@@ -77,6 +76,29 @@ public interface CompanyApi {
     @ResponseStatus(HttpStatus.OK)
     ResponseDto deleteCompany(final @PathVariable @Valid UUID id);
 
+
+    @Operation(description = "Удаление пустой компании.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Удаление прошло успешно.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Компания не найдена.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDto.class)
+                    )
+            ),
+    })
+    @DeleteMapping("/delete-empty/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseDto deleteEmptyCompany(final @PathVariable @Valid UUID id);
 
     @Operation(description = "Отмена удаления компании.")
     @ApiResponses(value = {

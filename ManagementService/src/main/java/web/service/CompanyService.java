@@ -11,6 +11,8 @@ public interface CompanyService {
 
     UUID saveCompany(final CompanyDto dto);
 
+    void deleteCompany(final UUID id);
+
     String getDomainById(final UUID id);
 
     Company findById(final UUID id);

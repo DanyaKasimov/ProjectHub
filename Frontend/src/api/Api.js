@@ -1,7 +1,7 @@
-export class api {
+export class Api {
 
   constructor() {
-    this.baseUrl = "http://localhost:8787/api/v1";
+    this.baseUrl = "http://localhost:9090/api/v1";
   }
 
   async request(method, endpoint, headers = {}, body = null) {
@@ -45,7 +45,7 @@ export class api {
     return this.request('PATCH', endpoint, headers, body);
   }
 
-  delete(endpoint, headers = {}, body = null) {
-    return this.request('DELETE', endpoint, headers, body);
+  delete(endpoint, headers = {}) {
+    return this.request('DELETE', endpoint, headers, null);
   }
 }

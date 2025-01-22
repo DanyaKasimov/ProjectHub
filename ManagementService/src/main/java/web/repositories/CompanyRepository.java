@@ -18,4 +18,5 @@ public interface CompanyRepository extends JpaRepository<Company, UUID> {
 
     @Query("select c.domain from Company c where c.id = :id")
     Optional<String> getDomainById(@Param("id") UUID id);
+
 }

@@ -55,6 +55,14 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
+    @Transactional
+    public void deleteCompany(final UUID id) {
+        findById(id);
+        companyRepository.deleteById(id);
+    }
+
+
+    @Override
     public String getDomainById(final UUID id) {
         return companyRepository.getDomainById(id).orElseThrow(
                 () -> new NoDataFoundException(String.format("Компания с ID = (%s) не найдена.", id))
