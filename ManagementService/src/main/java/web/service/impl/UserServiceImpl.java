@@ -215,7 +215,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    @Cacheable(value = "users.data.id", key = "#id")
+//    @Cacheable(value = "users.data.id", key = "#id")
     public UserDataDto findById(final UUID id) {
         val user = userRepository.findById(id).orElseThrow(
                 () -> new NoDataFoundException("Пользователь не найден.")

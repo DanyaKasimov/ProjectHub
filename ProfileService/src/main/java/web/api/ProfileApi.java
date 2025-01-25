@@ -19,7 +19,7 @@ import java.util.UUID;
 @Tag(name = "Данные сотрудников", description = "Методы для предоставления данных сотрудников")
 public interface ProfileApi {
 
-    @Operation(description = "Предоставление данных сотрудника")
+    @Operation(description = "Предоставление всех данных сотрудника")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -48,7 +48,7 @@ public interface ProfileApi {
     })
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseDto getInfo(final @PathVariable @Valid UUID id);
+    ResponseDto getEmployeeData(final @PathVariable @Valid UUID id);
 
 
 

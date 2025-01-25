@@ -1,19 +1,25 @@
 package web.service.impl;
 
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import web.accessor.EmailService;
 import web.accessor.ManagementService;
+import web.dto.request.EmailDto;
 import web.dto.request.InfoDto;
+import web.dto.request.UserDataDto;
+import web.dto.response.UserFullData;
 import web.exception.NoDataFoundException;
 import web.model.Info;
 import web.repositories.specifications.InfoRepository;
 import web.service.InfoService;
+import web.utils.JsonUtil;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -24,6 +30,8 @@ public class InfoServiceImpl implements InfoService {
     private final InfoRepository infoRepository;
 
     private final ManagementService managementService;
+
+    private final EmailService emailService;
 
     @Override
     public Info addInfo(final InfoDto infoDto) {
@@ -73,10 +81,28 @@ public class InfoServiceImpl implements InfoService {
 
 
     @Override
-    @Cacheable(value = "info.data", key = "#id")
-    public Info findById(final UUID id) {
-        return infoRepository.findById(id).orElseThrow(
-                () -> new NoDataFoundException("Данные не найдены.")
+//    @Cacheable(value = "info.data", key = "#id")
+    public UserFullData findById(final UUID id) {
+        Info info = infoRepository.findById(id).orElse(null);
+
+        UserDataDto data = JsonUtil.fromString(
+                JsonUtil.toJsonString(managementService.getEmployee(id).getResult()),
+                UserDataDto.class
         );
+
+        UUID emailId = UUID.fromString(data.getEmail());
+
+        String emailName = emailService.getEmail(emailId).getResult().toString();
+
+        EmailDto emailDto = EmailDto.builder()
+                .id(emailId)
+                .name(emailName)
+                .build();
+
+        return UserFullData.builder()
+                .info(info)
+                .data(data)
+                .email(emailDto)
+                .build();
     }
 }

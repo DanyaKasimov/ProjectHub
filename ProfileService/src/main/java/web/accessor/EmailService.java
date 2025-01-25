@@ -8,10 +8,10 @@ import web.dto.response.ResponseDto;
 
 import java.util.UUID;
 
-@FeignClient(name = "management-service")
+@FeignClient(name = "email-service")
 @Component
-public interface ManagementService {
+public interface EmailService {
 
-    @GetMapping("api/v1/user-management/get-employee/{id}")
-    ResponseDto getEmployee(final @PathVariable UUID id);
+    @GetMapping("api/v1/email/get-name/{id}")
+    ResponseDto getEmail(final @PathVariable UUID id);
 }

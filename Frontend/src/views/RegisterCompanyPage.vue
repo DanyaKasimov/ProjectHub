@@ -18,6 +18,7 @@
         <source :src="poster" type="video/mp4"/>
       </video>
       <LogoTextComponent class="logo-text"/>
+
     </div>
 
 
@@ -124,6 +125,7 @@ const registerCompany = async () => {
   } else {
     const errorJson = await response.json();
     addError(errorJson.errorMessage);
+    loading.value = false
   }
 };
 

@@ -68,7 +68,7 @@ public interface UserManagementApi {
                     )
             ),
     })
-    @GetMapping("/get-user/{id}")
+    @GetMapping("/get-employee/{id}")
     @ResponseStatus(HttpStatus.OK)
     ResponseDto getEmployee(final @PathVariable @Valid UUID id);
 

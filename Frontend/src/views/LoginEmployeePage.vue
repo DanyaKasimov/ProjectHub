@@ -24,7 +24,7 @@
     <div class="container-content">
       <LoaderSquareComponent class="loader" v-if="loading"/>
       <div v-else>
-        <h1 class="content-header">Вход</h1>
+        <h1 class="content-header">Вход в корпоративный аккаунт</h1>
         <div class="content-first">
           <InputComponent v-model="employeeData.username" :name="'Имя пользователя'" required
                           :description="'Введите ваш логин'" class="input-default"/>
@@ -146,7 +146,7 @@ function removeError(id) {
 }
 
 .content-header {
-  width: 100px;
+  width: 550px;
   margin: 13% auto 0;
   font-family: "DejaVu Sans Mono", monospace;
 }

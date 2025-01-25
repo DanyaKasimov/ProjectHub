@@ -41,8 +41,9 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/v1/user-management/update").authenticated()
-                        .requestMatchers("/api/v1/user-management/update-password/").authenticated()
-                        .requestMatchers("/api/v1/user-management/delete/").authenticated()
+                        .requestMatchers("/api/v1/user-management/update-password/**").authenticated()
+                        .requestMatchers("/api/v1/user-management/delete/**").authenticated()
+                        .requestMatchers("/api/v1/user-management/get-employee/**").authenticated()
                         .requestMatchers("/api/v1/user-management/add").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/company/**").permitAll()

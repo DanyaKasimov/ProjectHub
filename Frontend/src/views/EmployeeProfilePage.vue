@@ -1,5 +1,4 @@
 <template>
-  hello!
 </template>
 
 

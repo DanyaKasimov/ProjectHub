@@ -20,7 +20,7 @@ public class ProfileController implements ProfileApi {
     private final InfoService infoService;
 
     @Override
-    public ResponseDto getInfo(final UUID id) {
+    public ResponseDto getEmployeeData(final UUID id) {
         log.info("Поступил запрос на получение данных пользователя. ID: {}", id);
 
         val info = infoService.findById(id);

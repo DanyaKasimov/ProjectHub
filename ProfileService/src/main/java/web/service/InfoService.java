@@ -3,6 +3,7 @@ package web.service;
 
 import org.springframework.stereotype.Service;
 import web.dto.request.InfoDto;
+import web.dto.response.UserFullData;
 import web.model.Info;
 
 import java.util.UUID;
@@ -14,5 +15,5 @@ public interface InfoService {
 
     Info updateInfo(final InfoDto infoDto);
 
-    Info findById(final UUID id);
+    UserFullData findById(final UUID id);
 }

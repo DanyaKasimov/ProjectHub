@@ -1,11 +1,9 @@
-package web.dto.response;
+package web.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import web.constants.Role;
-import web.model.Company;
 
 import java.util.UUID;
 
@@ -29,7 +27,7 @@ public class UserDataDto {
 
     private String position;
 
-    private Role role;
+    private String role;
 
     private Company company;
 }

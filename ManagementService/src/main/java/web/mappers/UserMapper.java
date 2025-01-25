@@ -15,6 +15,8 @@ public interface UserMapper {
 
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
+    @Mapping(target = "company", source = "company")
+    @Mapping(target = "email", source = "emailId")
     UserDataDto toDtoLite(User user);
 
     UserDto toDto(User user);
