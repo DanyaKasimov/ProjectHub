@@ -29,7 +29,7 @@ export class Api {
   }
 
   post(endpoint, headers = {}, body = null) {
-    if (!headers || Object.keys(headers).length === 0) {
+      if (!headers || Object.keys(headers).length === 0) {
       headers = {
         'Content-Type': 'application/json',
       };

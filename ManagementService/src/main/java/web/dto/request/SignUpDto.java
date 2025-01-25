@@ -1,10 +1,10 @@
 package web.dto.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import web.constants.Role;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -26,5 +26,6 @@ public class SignUpDto {
 
     private Role role;
 
+    @Email(message = "Введенная почта не соответствует формату email.")
     private String email;
 }

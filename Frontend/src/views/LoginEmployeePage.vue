@@ -24,36 +24,15 @@
     <div class="container-content">
       <LoaderSquareComponent class="loader" v-if="loading"/>
       <div v-else>
-        <h1 class="content-header">Регистрация компании</h1>
-
-        <transition name="fade">
-          <div v-if="isFirstWindow" class="content-first">
-            <InputComponent v-model="companyData.name" :name="'Название'" required
-                            :description="'Введите полное название компании.'" class="input-default"/>
-            <InputComponent v-model="companyData.inn" :name="'ИНН'" required :min="10" :max="10"
-                            :description="'Введите ИНН компании.'"
-                            class="input-default"/>
-            <InputComponent v-model="companyData.domain" required :name="'Домен'"
-                            :description="'Введите домен компании.'"
-                            class="input-default"/>
-            <button style="margin-top: 8%" @click="switchStep" class="button-next">Следующий шаг</button>
-          </div>
-        </transition>
-
-        <transition name="fade">
-          <div v-if="!isFirstWindow" class="content-second">
-            <h2 class="content-second-header">Введите данные первого сотрудника компании</h2>
-            <InputComponent required v-model="employeeData.name" :name="'Имя'" class="input-default-2"/>
-            <InputComponent required v-model="employeeData.surname" :name="'Фамилия'" class="input-default-2"/>
-            <InputComponent required v-model="employeeData.patronymic" :name="'Отчество'" class="input-default-2"/>
-            <InputComponent required v-model="employeeData.position" :name="'Должность'" class="input-default-2"/>
-            <InputComponent required is-email v-model="employeeData.email" :name="'Электронная почта'"
-                            class="input-default-2"/>
-            <button @click="registerCompany" style="margin-top: 5%" class="button-next">Зарегистрировать компанию
-            </button>
-            <button style="margin-top: 1%" @click="switchStep" class="button-back">Вернуться на предыдущий шаг</button>
-          </div>
-        </transition>
+        <h1 class="content-header">Вход</h1>
+        <div class="content-first">
+          <InputComponent v-model="employeeData.username" :name="'Имя пользователя'" required
+                          :description="'Введите ваш логин'" class="input-default"/>
+          <InputComponent v-model="employeeData.password" required :name="'Пароль'"
+                          :description="'Введите ваш пароль'"
+                          class="input-default"/>
+          <button style="margin-top: 8%" @click="signin" class="button-next">Войти</button>
+        </div>
       </div>
     </div>
   </div>
@@ -73,34 +52,19 @@ import router from "@/router/index.js";
 
 const api = new Api()
 
-const companyData = reactive({
-  name: '',
-  inn: '',
-  domain: '',
+const employeeData = reactive({
+  username: '',
+  password: '',
 })
 
-const employeeData = reactive({
-  name: '',
-  surname: '',
-  patronymic: '',
-  position: '',
-  companyId: '',
-  role: 'ADMIN',
-  email: '',
-})
 
 const isDesktop = ref(true);
-const isFirstWindow = ref(true);
 const loading = ref(false);
 const errors = ref([]);
 
 
 const updateScreenSize = () => {
   isDesktop.value = window.innerWidth > 1024;
-};
-
-const switchStep = () => {
-  isFirstWindow.value = !isFirstWindow.value;
 };
 
 onMounted(() => {
@@ -112,41 +76,23 @@ onUnmounted(() => {
   window.removeEventListener("resize", updateScreenSize);
 });
 
-const companyId = ref('')
-
-const registerCompany = async () => {
+const signin = async () => {
   loading.value = true
-  const response = await api.post('/company/add', null, companyData);
+  const response = await api.post('/auth/signin', null, employeeData);
   if (response.ok) {
     const responseData = await response.json();
-    companyId.value = responseData.result
-    await addEmployee()
+    const jwt = responseData.result
+    localStorage.setItem("jwt", jwt)
+    setTimeout(() => {
+      loading.value = false
+    }, 1000)
+    await router.push("/employee/profile")
   } else {
+    loading.value = false
     const errorJson = await response.json();
     addError(errorJson.errorMessage);
   }
 };
-
-const addEmployee = async () => {
-  employeeData.companyId = companyId.value
-  const response = await api.post('/user-management/add', null, employeeData);
-  if (response.ok) {
-    const responseData = await response.json();
-    console.log(responseData.result);
-    loading.value = false
-    await router.push("/employee/login")
-  } else {
-    const errorJson = await response.json();
-    addError(errorJson.errorMessage);
-    const resp = await api.delete('/company/delete-empty/' + companyId.value);
-    if (!resp.ok) {
-      const errorJson = await response.json();
-      addError(errorJson.errorMessage);
-    }
-    loading.value = false
-  }
-};
-
 
 function addError(message) {
   const error = {id: Date.now(), message};
@@ -200,7 +146,7 @@ function removeError(id) {
 }
 
 .content-header {
-  width: 400px;
+  width: 100px;
   margin: 13% auto 0;
   font-family: "DejaVu Sans Mono", monospace;
 }
@@ -253,31 +199,6 @@ function removeError(id) {
   font-family: "DejaVu Sans Mono", monospace;
 }
 
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.fade-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.fade-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(0);
-  transition: none;
-}
-
 
 .error-container {
   position: fixed;
@@ -303,5 +224,8 @@ function removeError(id) {
   align-items: center;
   width: 90%;
   padding: 20px 0;
+}
+
+.loader {
 }
 </style>

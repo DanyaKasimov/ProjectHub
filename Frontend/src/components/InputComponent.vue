@@ -1,33 +1,59 @@
 <template>
   <div class="input">
-    <label :class="{ float: username }" for="username">{{ props.name }}</label>
-    <input id="username" type="text" v-model="username" class="content-input">
+    <label :class="{ float: localValue.length > 0 }" for="label_name">{{ props.name }}</label>
+    <input
+      id="label_name"
+      :type="inputType"
+      v-model="localValue"
+      class="content-input"
+      :required="props.required"
+      :minlength="props.min"
+      :maxlength="props.max"
+    >
     <span class="input-description">{{ props.description }}</span>
   </div>
 </template>
 
+
 <script setup>
-import {ref, defineProps} from "vue";
+import {ref, defineProps, watch, defineEmits, computed} from "vue";
 
 const props = defineProps({
-  name: "",
-  description: ""
-})
+  name: String,
+  description: String,
+  modelValue: String,
+  isEmail: Boolean,
+  required: Boolean,
+  max: Number,
+  min: Number
+});
 
-const username = ref("");
+const emit = defineEmits(["update:modelValue"]);
+
+const localValue = ref(props.modelValue);
+
+watch(localValue, (newValue) => {
+  emit("update:modelValue", newValue);
+});
+
+watch(() => props.modelValue, (newValue) => {
+  localValue.value = newValue;
+});
+
+const inputType = computed(() => {
+  return props.isEmail ? 'email' : 'text';
+});
 
 </script>
-
 
 <style scoped>
 .input {
   width: 100%;
-  border-radius: 10px;
   height: 40px;
   border: var(--border-input);
   position: relative;
-  margin: 40px auto 0 auto;
   text-align: left;
+  border-radius: 10px;
 }
 
 .content-input {
@@ -35,10 +61,10 @@ const username = ref("");
   height: 40px;
   padding: 0 10px;
   font-size: 16px;
-  background-color: var(--color-text-1);
+  background-color: var(--input-color-1);
   border: none;
   outline: none;
-  color: var(--color-text-1);;
+  color: var(--color-text-1);
   border-radius: 10px;
   font-weight: 700;
 }
@@ -50,7 +76,7 @@ label {
   transform: translateY(-50%);
   font-size: 16px;
   color: var(--color-text-1);
-  font-family: "Roboto Light", serif;
+  font-family: "DejaVu Sans Mono", monospace;
   transition: 0.3s ease;
   pointer-events: none;
 }
@@ -63,7 +89,7 @@ label.float {
 
 .input-description {
   color: var(--color-text-1);
-  font-family: "Roboto Light", serif;
+  font-family: "DejaVu Sans Mono", monospace;
   font-size: 15px;
   margin-top: 3px;
 }

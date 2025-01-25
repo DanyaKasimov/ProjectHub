@@ -1,18 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RegisterCompanyPage from "@/views/RegisterCompanyPage.vue";
+import LoginEmployeePage from "@/views/LoginEmployeePage.vue";
+import EmployeeProfilePage from "@/views/EmployeeProfilePage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'company_signup',
-      component: RegisterCompanyPage,
+      name: 'employee_signin',
+      component: LoginEmployeePage,
     },
     {
       path: '/company/register',
       name: 'signup',
       component: RegisterCompanyPage,
+    },
+    {
+      path: '/employee/login',
+      name: 'signin',
+      component: LoginEmployeePage,
+    },
+    {
+      path: '/employee/profile',
+      name: 'profile',
+      component: EmployeeProfilePage,
     },
     // {
     //   path: '/about',

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import web.constants.Role;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 @Data

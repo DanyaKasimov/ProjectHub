@@ -39,7 +39,7 @@ public class CompanyServiceImpl implements CompanyService {
             throw new InvalidDataException(String.format("Домен (%s) уже зарегистрирован.", dto.getDomain()));
         }
 
-        val domain = String.format("@%s.ph", dto.getDomain().toLowerCase());
+        val domain = dto.getDomain().toLowerCase();
 
         Company company = companyRepository.save(
                 Company.builder()

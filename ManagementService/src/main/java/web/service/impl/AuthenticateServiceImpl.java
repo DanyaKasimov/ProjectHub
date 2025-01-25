@@ -27,8 +27,7 @@ public class AuthenticateServiceImpl implements AuthenticateService {
 
     public String authenticate(final String username, final String password) {
         try {
-            Authentication authentication;
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return jwtService.generateToken(authentication);
         } catch (BadCredentialsException e) {
@@ -38,8 +37,8 @@ public class AuthenticateServiceImpl implements AuthenticateService {
 
     @Override
     public String authenticate(final SignInDto userDto) {
-        userService.findByUsername(userDto.getUsername());
-        return authenticate(userDto.getUsername(), userDto.getPassword());
+        userService.findByUsername(userDto.getUsername().trim());
+        return authenticate(userDto.getUsername().trim(), userDto.getPassword().trim());
     }
 
 }

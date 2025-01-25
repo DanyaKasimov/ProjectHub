@@ -9,7 +9,7 @@ public class Generator {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    private static final int PASSWORD_LENGTH = 15;
+    private static final int PASSWORD_LENGTH = 10;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -24,16 +24,11 @@ public class Generator {
         return password.toString();
     }
 
-    public static String generateUsername(String name, String surname, String patronymic) {
+    public static String generateUsername(String name, String surname, String patronymic, String domain) {
         return transliterate(name.substring(0, 1), true)
-                + transliterate(patronymic.substring(0, 1), true) + "."
-                + transliterate(surname, false);
-    }
-
-    public static String generateEmail(String name, String surname , String patronymic, String domain) {
-        return transliterate(name.substring(0, 1).toLowerCase(), true)
-                + transliterate(patronymic.substring(0, 1).toLowerCase(), true) + "."
-                + transliterate(surname.toLowerCase(), false) + RANDOM.nextInt(1000) + domain;
+                + transliterate(patronymic.substring(0, 1), true)
+                + transliterate(surname, false) + "."
+                + domain;
     }
 
     private static String transliterate(String input, boolean single) {

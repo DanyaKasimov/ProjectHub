@@ -13,8 +13,8 @@ public class Generator {
 
     public static String generateEmail(String name, String surname , String patronymic, String domain) {
         return transliterate(name.substring(0, 1).toLowerCase(), true)
-                + transliterate(patronymic.substring(0, 1).toLowerCase(), true) + "."
-                + transliterate(surname.toLowerCase(), false) + RANDOM.nextInt(1000) + domain;
+                + transliterate(patronymic.substring(0, 1).toLowerCase(), true)
+                + transliterate(surname.toLowerCase(), false) + RANDOM.nextInt(1000) + "@" + domain + ".ph";
     }
 
     private static String transliterate(String input, boolean single) {

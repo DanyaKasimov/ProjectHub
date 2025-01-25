@@ -65,25 +65,27 @@ public class UserServiceImpl implements UserService {
     public UserDto addEmployee(final SignUpDto signUpDto) {
         log.info("Добавление нового сотрудника для компании ID: {}", signUpDto.getCompanyId());
 
-        val company = companyService.findById(signUpDto.getCompanyId());
-        val username = Generator.generateUsername(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic());
+        Company company = companyService.findById(signUpDto.getCompanyId());
+        val domain = company.getDomain();
+
+        val username =
+                Generator.generateUsername(signUpDto.getName(), signUpDto.getSurname(), signUpDto.getPatronymic(), domain);
 
         if (userRepository.existsByUsernameAndCompany(username, company)) {
             throw new InvalidDataException(
                     String.format("Имя пользователя %s занято в компании %s.", username, company.getName()));
         }
 
-        val domain = company.getDomain();
         val password = Generator.generatePassword();
 
-        val emailCreateDto = EmailCreateDto.builder()
+        EmailCreateDto emailCreateDto = EmailCreateDto.builder()
                 .name(signUpDto.getName())
                 .surname(signUpDto.getSurname())
                 .patronymic(signUpDto.getPatronymic())
                 .domain(domain)
                 .build();
 
-        val emailResponse = JsonUtil.fromString(
+        EmailDto emailResponse = JsonUtil.fromString(
                 JsonUtil.toJsonString(emailService.createEmail(emailCreateDto).getResult()),
                 EmailDto.class
         );
@@ -187,7 +189,6 @@ public class UserServiceImpl implements UserService {
 
         log.info("Сотрудники удалены.");
     }
-
 
 
     // TODO Возможно сломается из за кэша
