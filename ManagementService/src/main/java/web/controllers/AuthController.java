@@ -18,7 +18,7 @@ public class AuthController implements AuthApi {
 
     @Override
     public ResponseDto signin(SignInDto signInDto) {
-        log.info("Поступил запрос на вход. Входные данные: {}", signInDto);
+        log.info("Поступил запрос на вход. Имя пользователя: {}", signInDto.getUsername());
 
         String jwt = authenticateService.authenticate(signInDto);
         return ResponseDto.builder().result(jwt).build();

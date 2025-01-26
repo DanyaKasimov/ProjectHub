@@ -21,7 +21,4 @@ public class Company {
     private String name;
 
     private String domain;
-
-    private String createdAt;
-
 }

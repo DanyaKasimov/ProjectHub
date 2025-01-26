@@ -1,10 +1,10 @@
 package web.service.impl;
 
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import web.accessor.EmailService;
 import web.accessor.ManagementService;
@@ -19,7 +19,6 @@ import web.service.InfoService;
 import web.utils.JsonUtil;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -104,5 +103,17 @@ public class InfoServiceImpl implements InfoService {
                 .data(data)
                 .email(emailDto)
                 .build();
+    }
+
+    @Override
+    public UUID getCurrentId() {
+        val id = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getDetails();
+        log.info("------");
+        log.info(id.toString());
+        log.info("------");
+        return UUID.fromString(id.toString());
     }
 }

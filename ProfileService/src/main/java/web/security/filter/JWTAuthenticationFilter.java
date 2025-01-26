@@ -31,21 +31,20 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         try {
             // Извлечение токена из заголовка Authorization
             String token = getTokenFromRequest(request);
-            log.info(token);
             if (token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 DecodedJWT decodedJWT = jwtService.validate(token);
 
                 // Извлечение данных пользователя
                 String username = decodedJWT.getClaim("username").asString();
                 String role = decodedJWT.getClaim("role").asString();
+                String id = decodedJWT.getClaim("id").asString();
 
                 if (username != null) {
-                    // Создаем объект Authentication
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(username, null, 
+                            new UsernamePasswordAuthenticationToken(username, null,
                                     Collections.singletonList(new SimpleGrantedAuthority(role)));
 
-                    // Устанавливаем авторизацию в SecurityContext
+                    authentication.setDetails(id);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
@@ -61,7 +60,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7); // Убираем "Bearer "
+            return headerAuth.substring(7);
         }
         return null;
     }

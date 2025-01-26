@@ -46,9 +46,9 @@ public interface ProfileApi {
                     )
             )
     })
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     @ResponseStatus(HttpStatus.OK)
-    ResponseDto getEmployeeData(final @PathVariable @Valid UUID id);
+    ResponseDto getEmployeeData(final @PathVariable @Valid String id);
 
 
 

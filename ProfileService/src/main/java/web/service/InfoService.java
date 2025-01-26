@@ -15,5 +15,7 @@ public interface InfoService {
 
     Info updateInfo(final InfoDto infoDto);
 
+    UUID getCurrentId();
+
     UserFullData findById(final UUID id);
 }
