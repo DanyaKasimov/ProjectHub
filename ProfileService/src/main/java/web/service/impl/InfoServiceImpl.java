@@ -68,11 +68,9 @@ public class InfoServiceImpl implements InfoService {
                 () -> new NoDataFoundException("Данные не найдены.")
         );
 
-        info.setUserId(info.getUserId());
         info.setPhoneNumber(infoDto.getPhoneNumber());
         info.setBirthday(infoDto.getBirthday());
         info.setAddress(infoDto.getAddress());
-        info.setCreatedAt(info.getCreatedAt());
         info.setUpdatedAt(LocalDateTime.now());
 
         return infoRepository.save(info);
@@ -111,9 +109,7 @@ public class InfoServiceImpl implements InfoService {
                 .getContext()
                 .getAuthentication()
                 .getDetails();
-        log.info("------");
-        log.info(id.toString());
-        log.info("------");
+
         return UUID.fromString(id.toString());
     }
 }

@@ -85,7 +85,7 @@ const signin = async () => {
     localStorage.setItem("jwt", jwt)
     setTimeout(() => {
       loading.value = false
-    }, 1000)
+    }, 500)
     await router.push("/employee/profile")
   } else {
     loading.value = false

@@ -1,10 +1,22 @@
 :root {
     --bg-color-1: white;
+    --bg-color-2: #02020e;
+    --bg-color-3: #fdfdfd;
+
     --input-color-1: #f5f5f5;
+
     --color-text-1: #3d3d3d;
+    --color-text-2: #737373;
+
     --line-non-active: #c4c4c4;
     /*--line-active: #7500ff;*/
     --line-active: #7500ff;
     --line-active-hover: #9131ff;
+
     --border-input: 1px #cbcbcb solid;
+    --border-input-2: 1px #e8e8e8 solid;
+
+    --icon-color-1: #464ae7;
+
+    --font-1: "DejaVu Sans Mono";
 }
