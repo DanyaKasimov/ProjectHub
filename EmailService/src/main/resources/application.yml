@@ -6,10 +6,9 @@ spring:
     name: email-service
 
   datasource:
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/projecthub
     username: postgres
     password: root
-    url: jdbc:postgresql://localhost:5431/projecthub
   jpa:
     hibernate:
       ddl-auto: update
